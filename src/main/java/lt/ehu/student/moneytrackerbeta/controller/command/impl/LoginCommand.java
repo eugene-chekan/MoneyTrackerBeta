@@ -26,8 +26,8 @@ public class LoginCommand implements Command {
                 int userId = userService.getUserId(username);
                 List<Asset> assets = userService.findAssets(userId);
                 request.setAttribute("assets", assets);
-                BigDecimal income = new BigDecimal("100.99");
-                BigDecimal expense = new BigDecimal("51.23");
+                BigDecimal income = new BigDecimal("100.99"); // TODO: add income calculation logic
+                BigDecimal expense = new BigDecimal("51.23"); // TODO: add expense calculation logic
                 request.setAttribute("userName", firstName);
                 request.setAttribute("currentDate", date);
                 request.setAttribute("income", income);

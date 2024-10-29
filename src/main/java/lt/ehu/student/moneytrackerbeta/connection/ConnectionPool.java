@@ -28,6 +28,7 @@ public class ConnectionPool {
             DriverManager.registerDriver(new org.postgresql.Driver());
         } catch (SQLException e) {
             logger.error("Failed to register driver.", e);
+            throw new ExceptionInInitializerError("Failed to register database driver.");
         }
     }
 

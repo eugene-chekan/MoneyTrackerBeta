@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
             boolean userCreated = userDao.create(user);
             user = userDao.findByLogin(username);
             // Create a default asset for the user
-            defaultAsset = new Asset(user.getId(), "Cash", "The default first asset", BigDecimal.valueOf(0.00), BigDecimal.valueOf(0.00), 1);
+            defaultAsset = new Asset(user.getId(), "Cash", BigDecimal.valueOf(0.00));
             assetDao.create(defaultAsset);
             return userCreated;
         } catch (DaoException | SQLException e) {

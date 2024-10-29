@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,7 +31,7 @@
         }
         .assets-container {
             background-color: white;
-            padding: 2rem;
+            padding: 0.5rem;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             flex: 1; /* Makes all rectangles the same size */
@@ -89,8 +90,10 @@
     <div class="date">Today: ${currentDate}</div>
     <div class="assets-row">
         <c:forEach var="asset" items="${assets}">
-            <div class="assets-container">${asset.name} (${asset.currentBalance})</div>
-            Asset here
+            <div class="assets-container">
+                <p>${asset.name}</p>
+                <p>(<fmt:formatNumber value="${asset.currentBalance}" type="currency" currencySymbol="$" minFractionDigits="2"/>)</p>
+            </div>
         </c:forEach>
     </div>
     <div class="report">
@@ -102,10 +105,10 @@
     <div class="balance">
         <c:choose>
             <c:when test="${balance >= 0}">
-                <span class="positive">Current Balance: $${balance}</span>
+                <span class="positive">Current Balance: <fmt:formatNumber value="${balance}" type="currency" currencySymbol="$" minFractionDigits="2"/></span>
             </c:when>
             <c:otherwise>
-                <span class="negative">Current Balance: $${balance}</span>
+                <span class="negative">Current Balance: <fmt:formatNumber value="${balance}" type="currency" currencySymbol="$" minFractionDigits="2"/></span>
             </c:otherwise>
         </c:choose>
     </div>
