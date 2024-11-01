@@ -45,10 +45,8 @@ public class Controller extends HttpServlet {
         }
         Command command = CommandType.chooseCommand(commandStr);
         String page;
-        String contextPath;
         try {
             page = command.execute(request);
-            contextPath = request.getContextPath();
         } catch (CommandException e) {
             logger.error("Error while executing command", e);
             throw new RuntimeException(e);

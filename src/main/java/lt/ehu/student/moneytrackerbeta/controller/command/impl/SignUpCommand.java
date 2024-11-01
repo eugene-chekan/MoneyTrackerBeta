@@ -1,15 +1,11 @@
 package lt.ehu.student.moneytrackerbeta.controller.command.impl;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import lt.ehu.student.moneytrackerbeta.controller.command.Command;
 import lt.ehu.student.moneytrackerbeta.exception.CommandException;
 import lt.ehu.student.moneytrackerbeta.exception.ServiceException;
 import lt.ehu.student.moneytrackerbeta.service.UserService;
 import lt.ehu.student.moneytrackerbeta.service.impl.UserServiceImpl;
-
-import java.io.IOException;
-import java.sql.SQLException;
 
 public class SignUpCommand implements Command {
     @Override

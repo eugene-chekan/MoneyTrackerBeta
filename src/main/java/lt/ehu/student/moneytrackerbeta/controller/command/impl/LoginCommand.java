@@ -1,21 +1,18 @@
 package lt.ehu.student.moneytrackerbeta.controller.command.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lt.ehu.student.moneytrackerbeta.controller.command.Command;
 import lt.ehu.student.moneytrackerbeta.exception.ServiceException;
 import lt.ehu.student.moneytrackerbeta.model.Asset;
 import lt.ehu.student.moneytrackerbeta.service.UserService;
 import lt.ehu.student.moneytrackerbeta.service.impl.UserServiceImpl;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class LoginCommand implements Command {
     @Override
     public String execute(HttpServletRequest request) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd yyyy");
-        String date = dateFormat.format(new java.util.Date());
         UserService userService = new UserServiceImpl();
         String username = request.getParameter("username");
         String password = request.getParameter("password");
@@ -24,16 +21,20 @@ public class LoginCommand implements Command {
             if (userService.verifyLogin(username, password)) {
                 String firstName = userService.getFirstName(username);
                 int userId = userService.getUserId(username);
-                List<Asset> assets = userService.findAssets(userId);
-                request.setAttribute("assets", assets);
-                BigDecimal income = new BigDecimal("100.99"); // TODO: add income calculation logic
-                BigDecimal expense = new BigDecimal("51.23"); // TODO: add expense calculation logic
-                request.setAttribute("userName", firstName);
-                request.setAttribute("currentDate", date);
-                request.setAttribute("income", income);
-                request.setAttribute("expense", expense);
-                request.setAttribute("balance", income.subtract(expense));
-                page = "pages/dashboard.jsp";
+                List<Asset> allAssets = userService.findAssets(userId);
+                List<Asset> accounts = allAssets.stream().filter(Asset::isAccount).toList();
+                List<Asset> incomes = allAssets.stream().filter(Asset::isIncome).toList();
+                List<Asset> expenses = allAssets.stream().filter(Asset::isExpense).toList();
+
+                HttpSession session = request.getSession();
+                session.setAttribute("accounts", accounts);
+                session.setAttribute("incomeSources", incomes);
+                session.setAttribute("expenseSources", expenses);
+                session.setAttribute("userId", userId);
+                session.setAttribute("userName", firstName);
+                session.setAttribute("isLoggedIn", true);
+
+                page = DashboardCommand.prepareDashboard(request, firstName, accounts, incomes, expenses);
             } else {
                 request.setAttribute("errorUserPassMessage", "Invalid username or password");
                 page = "pages/login.jsp";

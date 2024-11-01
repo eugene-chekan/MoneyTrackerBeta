@@ -89,7 +89,7 @@
     <h1>Welcome, ${userName}!</h1>
     <div class="date">Today: ${currentDate}</div>
     <div class="assets-row">
-        <c:forEach var="asset" items="${assets}">
+        <c:forEach var="asset" items="${accounts}">
             <div class="assets-container">
                 <p>${asset.name}</p>
                 <p>(<fmt:formatNumber value="${asset.currentBalance}" type="currency" currencySymbol="$" minFractionDigits="2"/>)</p>
@@ -114,10 +114,10 @@
     </div>
 
     <br/><br/>
-
-    <button onclick="location.href='addTransaction.jsp'">Add Transaction</button>
+    <p class="positive">${successfulTransactionMsg}</p>
+    <button onclick="location.href='${pageContext.request.contextPath}/pages/new_transaction.jsp'">New Transaction</button>
     <br/><br/>
-    <a class="logout" href="${pageContext.request.contextPath}?command=logout">Logout</a>
+    <a class="logout" href="${pageContext.request.contextPath}/controller?command=logout">Logout</a>
 </div>
 </body>
 </html>

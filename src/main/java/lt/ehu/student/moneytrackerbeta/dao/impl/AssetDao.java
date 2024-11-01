@@ -14,8 +14,9 @@ import java.util.List;
 
 public class AssetDao implements BaseDao<Asset> {
     private static final Logger logger = LogManager.getLogger(AssetDao.class);
-    private static final String SELECT_ASSETS_BY_USER_ID = "SELECT id, user_id, name, description, init_balance, current_balance, currency FROM public.asset WHERE user_id = ?";
-    private static final String INSERT_ASSET = "INSERT INTO public.asset (user_id, name, description, init_balance, current_balance, currency) VALUES (?, ?, ?, ?, ?, ?)";
+    private static final String SELECT_ASSETS_BY_USER_ID = "SELECT id, user_id, name, description, init_balance, current_balance, currency, type FROM public.asset WHERE user_id = ?";
+    private static final String SELECT_ASSETS_BY_USER_ID_AND_TYPE = "SELECT id, user_id, name, description, init_balance, current_balance, currency, type FROM public.asset WHERE user_id = ? AND type = ?";
+    private static final String INSERT_ASSET = "INSERT INTO public.asset (user_id, name, description, init_balance, current_balance, currency, type) VALUES (?, ?, ?, ?, ?, ?, ?)";
     @Override
     public boolean create(Asset asset) throws DaoException, SQLException {
         logger.info("Creating new asset: {}", asset.getName());
@@ -32,11 +33,16 @@ public class AssetDao implements BaseDao<Asset> {
             statement.setBigDecimal(4, asset.getInitBalance());
             statement.setBigDecimal(5, asset.getCurrentBalance());
             statement.setInt(6, asset.getCurrency());
+            statement.setInt(7, asset.getType());
             statement.executeUpdate();
             return true;
         } catch (SQLException e) {
             logger.error("Error while adding new asset to the database", e);
             throw new DaoException("Error while adding new asset to the database", e);
+        } finally {
+            if (connection != null) {
+                ConnectionPool.getInstance().releaseConnection(connection);
+            }
         }
     }
 
@@ -63,21 +69,7 @@ public class AssetDao implements BaseDao<Asset> {
             connection = ConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(SELECT_ASSETS_BY_USER_ID);
             statement.setInt(1, userId);
-            var resultSet = statement.executeQuery();
-            var assets = new java.util.ArrayList<Asset>();
-            while (resultSet.next()) {
-                var asset = new Asset(
-                        resultSet.getString("id"),
-                        resultSet.getInt("user_id"),
-                        resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getBigDecimal("init_balance"),
-                        resultSet.getBigDecimal("current_balance"),
-                        resultSet.getInt("currency")
-                );
-                assets.add(asset);
-            }
-            return assets;
+            return getAssets(statement);
         } catch (SQLException e) {
             logger.error("Error while retrieving assets from the database", e);
             throw new DaoException("Error while retrieving assets from the database", e);
@@ -91,5 +83,44 @@ public class AssetDao implements BaseDao<Asset> {
     @Override
     public Asset findById(int id) throws DaoException {
         return null;
+    }
+
+    public List<Asset> findAllByUserIdAndType(int userId, int type) throws DaoException {
+        logger.debug("Finding all assets by user ID and type: {}, {}", userId, type);
+        PreparedStatement statement;
+        Connection connection = null;
+        try {
+            connection = ConnectionPool.getInstance().getConnection();
+            statement = connection.prepareStatement(SELECT_ASSETS_BY_USER_ID_AND_TYPE);
+            statement.setInt(1, userId);
+            statement.setInt(2, type);
+            return getAssets(statement);
+        } catch (SQLException e) {
+            logger.error("Error while retrieving assets from the database", e);
+            throw new DaoException("Error while retrieving assets from the database", e);
+        } finally {
+            if (connection != null) {
+                ConnectionPool.getInstance().releaseConnection(connection);
+            }
+        }
+    }
+
+    private List<Asset> getAssets(PreparedStatement statement) throws SQLException {
+        var resultSet = statement.executeQuery();
+        var assets = new java.util.ArrayList<Asset>();
+        while (resultSet.next()) {
+            var asset = new Asset(
+                    resultSet.getString("id"),
+                    resultSet.getInt("user_id"),
+                    resultSet.getString("name"),
+                    resultSet.getString("description"),
+                    resultSet.getBigDecimal("init_balance"),
+                    resultSet.getBigDecimal("current_balance"),
+                    resultSet.getInt("currency"),
+                    resultSet.getInt("type")
+            );
+            assets.add(asset);
+        }
+        return assets;
     }
 }

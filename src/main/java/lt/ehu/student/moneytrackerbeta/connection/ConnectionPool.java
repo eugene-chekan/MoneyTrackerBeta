@@ -27,7 +27,7 @@ public class ConnectionPool {
         try {
             DriverManager.registerDriver(new org.postgresql.Driver());
         } catch (SQLException e) {
-            logger.error("Failed to register driver.", e);
+            logger.fatal("Failed to register driver.", e);
             throw new ExceptionInInitializerError("Failed to register database driver.");
         }
     }
@@ -37,8 +37,8 @@ public class ConnectionPool {
         try (InputStream input = getClass().getClassLoader().getResourceAsStream("db.properties")) {
             props.load(input);
         } catch (IOException e) {
-            logger.error("Failed to load properties.", e);
-            throw new RuntimeException("Failed to load properties.", e);
+            logger.fatal("Failed to load properties.", e);
+            throw new ExceptionInInitializerError("Failed to load properties.");
         }
         final String URL = constructUrl(props);
         Connection connection = null;
@@ -47,7 +47,7 @@ public class ConnectionPool {
                 connection = DriverManager.getConnection(URL, props);
                 logger.debug("Connection #{} created.", i);
             } catch (SQLException e) {
-                logger.error("Failed to create connection.", e);
+                logger.fatal("Failed to create connection.", e);
             }
             if (connection == null) {
                 logger.error("Failed to add connection to the pool.");
@@ -84,6 +84,7 @@ public class ConnectionPool {
             logger.debug("Connection put to the used connections queue.");
         } catch (InterruptedException e) {
             logger.error("Failed to get connection from the pool.", e);
+            Thread.currentThread().interrupt();
         }
         return connection;
     }

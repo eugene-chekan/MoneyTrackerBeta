@@ -33,7 +33,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean registerUser(String username, String password, String firstName, String lastName, String email) throws ServiceException {
         User user;
-        Asset defaultAsset;
+        Asset defaultAccount;
+        Asset defaultIncome;
+        Asset defaultExpense;
         if (isUsernameTaken(username)) {
             return false;
         }
@@ -45,9 +47,16 @@ public class UserServiceImpl implements UserService {
         try {
             boolean userCreated = userDao.create(user);
             user = userDao.findByLogin(username);
-            // Create a default asset for the user
-            defaultAsset = new Asset(user.getId(), "Cash", BigDecimal.valueOf(0.00));
-            assetDao.create(defaultAsset);
+            int userId = user.getId();
+            // Create default assets for the user
+            defaultAccount = new Asset(userId, "Cash (default)", BigDecimal.valueOf(0.00));
+            defaultIncome = new Asset(userId, "Salary (default)", BigDecimal.valueOf(0.00));
+            defaultExpense = new Asset(userId, "Groceries (default)", BigDecimal.valueOf(0.00));
+            defaultIncome.setType(1); // TODO: make asset types enumeration
+            defaultExpense.setType(2); // TODO: make asset types enumeration
+            assetDao.create(defaultAccount);
+            assetDao.create(defaultIncome);
+            assetDao.create(defaultExpense);
             return userCreated;
         } catch (DaoException | SQLException e) {
             throw new ServiceException("Error while registering user", e);
@@ -90,6 +99,14 @@ public class UserServiceImpl implements UserService {
         try {
             return assetDao.findAllByUserId(userId);
         } catch (DaoException | SQLException e) {
+            throw new ServiceException("Error while getting assets", e);
+        }
+    }
+    public List<Asset> findAssetsByType(int userId, int type) throws ServiceException {
+        AssetDao assetDao = new AssetDao();
+        try {
+            return assetDao.findAllByUserIdAndType(userId, type);
+        } catch (DaoException e) {
             throw new ServiceException("Error while getting assets", e);
         }
     }

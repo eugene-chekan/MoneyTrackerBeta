@@ -7,6 +7,9 @@
         <param-name>log4jConfiguration</param-name>
         <param-value>log4j2.xml</param-value>
     </context-param>
+    <session-config>
+        <session-timeout>300</session-timeout>
+    </session-config>
     <listener>
         <listener-class>org.apache.logging.log4j.web.Log4jServletContextListener</listener-class>
     </listener>
