@@ -1,7 +1,11 @@
 package lt.ehu.student.moneytrackerbeta.service;
 
+import lt.ehu.student.moneytrackerbeta.exception.ServiceException;
+
+import java.math.BigDecimal;
+
 public interface TransactionService {
-    void addTransaction(String category, String type, double amount, String date);
+    boolean addTransaction(int userId, String type, String source, String destination, String label, String date, BigDecimal amount, String comment, String currency) throws ServiceException;
     void deleteTransaction(int transactionId);
     void updateTransaction(int transactionId, String category, String type, double amount, String date);
     double calculateTotalIncome();

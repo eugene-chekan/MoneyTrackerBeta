@@ -6,15 +6,15 @@ public class Transaction extends AbstractModel {
     private String id;
     private int userId;
     private int type;
-    private int source;
-    private int destination;
+    private String source;  // uuid type
+    private String destination; // uuid type
     private String label;
     private int date; // this is the creation timestamp
     private BigDecimal amount;
     private String comment;
     private int currency;
 
-    public Transaction(String id, int userId, int type, int source, int destination, String label, int date, BigDecimal amount, String comment, int currency) {
+    public Transaction(String id, int userId, int type, String source, String destination, String label, int date, BigDecimal amount, String comment, int currency) {
         this.id = id;
         this.userId = userId;
         this.type = type;
@@ -30,8 +30,8 @@ public class Transaction extends AbstractModel {
     public Transaction() {
         this.userId = 0;
         this.type = 0;
-        this.source = 0;
-        this.destination = 0;
+        this.source = null;
+        this.destination = null;
         this.label = null;
         this.date = 0;
         this.amount = null;
@@ -52,11 +52,11 @@ public class Transaction extends AbstractModel {
         this.type = type;
     }
 
-    public void setSource(int source) {
+    public void setSource(String source) {
         this.source = source;
     }
 
-    public void setDestination(int destination) {
+    public void setDestination(String destination) {
         this.destination = destination;
     }
 
@@ -84,11 +84,11 @@ public class Transaction extends AbstractModel {
         return type;
     }
 
-    public int getSource() {
+    public String getSource() {
         return source;
     }
 
-    public int getDestination() {
+    public String getDestination() {
         return destination;
     }
 

@@ -34,7 +34,7 @@ public class LoginCommand implements Command {
                 session.setAttribute("userName", firstName);
                 session.setAttribute("isLoggedIn", true);
 
-                page = DashboardCommand.prepareDashboard(request, firstName, accounts, incomes, expenses);
+                page = DashboardCommand.prepareDashboard(request);
             } else {
                 request.setAttribute("errorUserPassMessage", "Invalid username or password");
                 page = "pages/login.jsp";

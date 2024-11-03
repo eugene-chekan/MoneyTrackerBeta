@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -16,6 +17,7 @@ public class AssetDao implements BaseDao<Asset> {
     private static final Logger logger = LogManager.getLogger(AssetDao.class);
     private static final String SELECT_ASSETS_BY_USER_ID = "SELECT id, user_id, name, description, init_balance, current_balance, currency, type FROM public.asset WHERE user_id = ?";
     private static final String SELECT_ASSETS_BY_USER_ID_AND_TYPE = "SELECT id, user_id, name, description, init_balance, current_balance, currency, type FROM public.asset WHERE user_id = ? AND type = ?";
+    private static final String SELECT_ASSET_BY_USER_ID_AND_NAME = "SELECT id, user_id, name, description, init_balance, current_balance, currency, type FROM public.asset WHERE user_id = ? AND name = ?";
     private static final String INSERT_ASSET = "INSERT INTO public.asset (user_id, name, description, init_balance, current_balance, currency, type) VALUES (?, ?, ?, ?, ?, ?, ?)";
     @Override
     public boolean create(Asset asset) throws DaoException, SQLException {
@@ -103,6 +105,39 @@ public class AssetDao implements BaseDao<Asset> {
                 ConnectionPool.getInstance().releaseConnection(connection);
             }
         }
+    }
+
+    public Asset findByUserIdAndName(int userId, String name) throws DaoException {
+        logger.debug("Finding asset by user ID and name: {}, {}", userId, name);
+        PreparedStatement statement;
+        Connection connection = null;
+        try {
+            connection = ConnectionPool.getInstance().getConnection();
+            statement = connection.prepareStatement(SELECT_ASSET_BY_USER_ID_AND_NAME);
+            statement.setInt(1, userId);
+            statement.setString(2, name);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return new Asset(
+                        resultSet.getString("id"),
+                        resultSet.getInt("user_id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("description"),
+                        resultSet.getBigDecimal("init_balance"),
+                        resultSet.getBigDecimal("current_balance"),
+                        resultSet.getInt("currency"),
+                        resultSet.getInt("type")
+                );
+            }
+        } catch (SQLException e) {
+            logger.error("Error while retrieving asset from the database", e);
+            throw new DaoException("Error while retrieving asset from the database", e);
+        } finally {
+            if (connection != null) {
+                ConnectionPool.getInstance().releaseConnection(connection);
+            }
+        }
+        return null;
     }
 
     private List<Asset> getAssets(PreparedStatement statement) throws SQLException {

@@ -4,9 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lt.ehu.student.moneytrackerbeta.controller.command.Command;
 import lt.ehu.student.moneytrackerbeta.exception.CommandException;
-import lt.ehu.student.moneytrackerbeta.exception.ServiceException;
 import lt.ehu.student.moneytrackerbeta.model.Asset;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

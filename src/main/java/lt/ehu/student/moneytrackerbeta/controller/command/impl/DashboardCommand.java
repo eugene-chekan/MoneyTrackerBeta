@@ -16,24 +16,22 @@ public class DashboardCommand implements Command {
     @Override
     public String execute(HttpServletRequest request) {
         // Get user ID from session instead of login parameters
-        String firstName = (String) request.getSession().getAttribute("firstName");
-        List<Asset> accounts = (List<Asset>) request.getSession().getAttribute("accounts");
-        List<Asset> incomes = (List<Asset>) request.getSession().getAttribute("incomeSources");
-        List<Asset> expenses = (List<Asset>) request.getSession().getAttribute("expenseSources");
-
-        return prepareDashboard(request, firstName, accounts, incomes, expenses);
+        return prepareDashboard(request);
     }
 
-    public static String prepareDashboard(HttpServletRequest request, String firstName, List<Asset> accounts, List<Asset> incomes, List<Asset> expenses) {
+    public static String prepareDashboard(HttpServletRequest request) {
         HttpSession session = request.getSession();
         boolean isLoggedIn = (boolean)session.getAttribute("isLoggedIn");
         logger.debug("Is user logged in: {}", isLoggedIn);
         if  (! isLoggedIn) {
             return "pages/login.jsp";
         }
+        List<Asset> accounts = (List<Asset>) request.getSession().getAttribute("accounts");
+        List<Asset> incomes = (List<Asset>) request.getSession().getAttribute("incomeSources");
+        List<Asset> expenses = (List<Asset>) request.getSession().getAttribute("expenseSources");
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd yyyy");
         String date = dateFormat.format(new java.util.Date());
-
+        String firstName = (String) request.getSession().getAttribute("firstName");
 
         BigDecimal income = new BigDecimal("100.99"); // TODO: add income calculation logic
         BigDecimal expense = new BigDecimal("51.23"); // TODO: add expense calculation logic
