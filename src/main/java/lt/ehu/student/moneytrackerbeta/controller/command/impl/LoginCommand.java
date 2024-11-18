@@ -5,6 +5,9 @@ import jakarta.servlet.http.HttpSession;
 import lt.ehu.student.moneytrackerbeta.controller.command.Command;
 import lt.ehu.student.moneytrackerbeta.exception.ServiceException;
 import lt.ehu.student.moneytrackerbeta.model.Asset;
+import lt.ehu.student.moneytrackerbeta.model.CurrencyEnum;
+import lt.ehu.student.moneytrackerbeta.model.TransactionType;
+import lt.ehu.student.moneytrackerbeta.model.User;
 import lt.ehu.student.moneytrackerbeta.service.UserService;
 import lt.ehu.student.moneytrackerbeta.service.impl.UserServiceImpl;
 
@@ -19,19 +22,20 @@ public class LoginCommand implements Command {
         String page;
         try {
             if (userService.verifyLogin(username, password)) {
-                String firstName = userService.getFirstName(username);
-                int userId = userService.getUserId(username);
-                List<Asset> allAssets = userService.findAssets(userId);
+                User user = userService.findUser(username);
+                List<Asset> allAssets = userService.findAssets(user.getId());
                 List<Asset> accounts = allAssets.stream().filter(Asset::isAccount).toList();
                 List<Asset> incomes = allAssets.stream().filter(Asset::isIncome).toList();
                 List<Asset> expenses = allAssets.stream().filter(Asset::isExpense).toList();
+                List<TransactionType> types = List.of(TransactionType.getDisplayableTypes());
 
                 HttpSession session = request.getSession();
+                session.setAttribute("user", user);
                 session.setAttribute("accounts", accounts);
                 session.setAttribute("incomeSources", incomes);
                 session.setAttribute("expenseSources", expenses);
-                session.setAttribute("userId", userId);
-                session.setAttribute("userName", firstName);
+                session.setAttribute("transactionTypes", types);
+                session.setAttribute("currencies", CurrencyEnum.values());
                 session.setAttribute("isLoggedIn", true);
 
                 page = DashboardCommand.prepareDashboard(request);

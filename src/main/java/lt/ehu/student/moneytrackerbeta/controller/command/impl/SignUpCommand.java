@@ -17,6 +17,7 @@ public class SignUpCommand implements Command {
         String firstName = request.getParameter("firstName");
         String lastName = request.getParameter("lastName");
         String email = request.getParameter("email");
+        int defaultCurrency = Integer.parseInt(request.getParameter("default_curr"));
         try {
             if (userService.isUsernameTaken(username)) {
                 request.setAttribute("errorUserNameTaken", "Username is already taken. Try a different one.");
@@ -31,7 +32,7 @@ public class SignUpCommand implements Command {
             return "pages/signup.jsp";
         }
         try {
-            if (!userService.registerUser(username, password, firstName, lastName, email)) {
+            if (!userService.registerUser(username, password, firstName, lastName, defaultCurrency, email)) {
                 request.setAttribute("errorMessage", "An error occurred while registering the user.");
                 return "pages/signup.jsp";
             };

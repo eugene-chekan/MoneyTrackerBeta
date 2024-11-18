@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lt.ehu.student.moneytrackerbeta.controller.command.Command;
 import lt.ehu.student.moneytrackerbeta.model.Asset;
+import lt.ehu.student.moneytrackerbeta.model.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,7 +24,7 @@ public class DashboardCommand implements Command {
         HttpSession session = request.getSession();
         boolean isLoggedIn = (boolean)session.getAttribute("isLoggedIn");
         logger.debug("Is user logged in: {}", isLoggedIn);
-        if  (! isLoggedIn) {
+        if  (!isLoggedIn) {
             return "pages/login.jsp";
         }
         List<Asset> accounts = (List<Asset>) request.getSession().getAttribute("accounts");
@@ -31,7 +32,7 @@ public class DashboardCommand implements Command {
         List<Asset> expenses = (List<Asset>) request.getSession().getAttribute("expenseSources");
         SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, MMM dd yyyy");
         String date = dateFormat.format(new java.util.Date());
-        String firstName = (String) request.getSession().getAttribute("firstName");
+        User user = (User) request.getSession().getAttribute("user");
 
         BigDecimal income = new BigDecimal("100.99"); // TODO: add income calculation logic
         BigDecimal expense = new BigDecimal("51.23"); // TODO: add expense calculation logic
@@ -39,7 +40,7 @@ public class DashboardCommand implements Command {
         request.setAttribute("accounts", accounts);
         request.setAttribute("incomeSources", incomes);
         request.setAttribute("expenseSources", expenses);
-        request.setAttribute("userName", firstName);
+        request.setAttribute("userName", user.getFirstName());
         request.setAttribute("currentDate", date);
         request.setAttribute("income", income);
         request.setAttribute("expense", expense);

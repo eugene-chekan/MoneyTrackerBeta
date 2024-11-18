@@ -9,13 +9,16 @@ import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 public class UserDao implements BaseDao<User> {
-    private static final String SELECT_ALL_USERS = "SELECT * FROM public.user";
-    private static final String SELECT_USER_BY_LOGIN = "SELECT * FROM public.user WHERE login = ?";
-    private static final String INSERT_USER = "INSERT INTO public.user (login, password, email, first_name, last_name) VALUES (?, ?, ?, ?, ?)";
     private static final Logger logger = LogManager.getLogger(UserDao.class);
+
+    private static final String SELECT_ALL_USERS = "SELECT id, login, password_hash, first_name, last_name, default_currency, email, registration_date FROM public.user";
+    private static final String SELECT_USER_BY_LOGIN = "SELECT id, login, password_hash, first_name, last_name, default_currency, email, registration_date FROM public.user WHERE login = ?";
+    private static final String INSERT_USER = "INSERT INTO public.user (login, password_hash, first_name, last_name, default_currency, email, registration_date) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
     public List<User> findAll() throws DaoException {
         List<User> users = new ArrayList<>();
@@ -28,12 +31,14 @@ public class UserDao implements BaseDao<User> {
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String login = resultSet.getString("login");
-                String password = resultSet.getString("password");
-                String email = resultSet.getString("email");
+                String passwordHash = resultSet.getString("password_hash");
                 String firstName = resultSet.getString("first_name");
                 String lastName = resultSet.getString("last_name");
+                int defaultCurrency = Integer.parseInt(resultSet.getString("default_currency"));
+                String email = resultSet.getString("email");
+                Timestamp registrationDate = resultSet.getTimestamp("registration_date");
                 // Create User objects and add them to the list
-                User user = new User(id, login, password, email, firstName, lastName);
+                User user = new User(id, login, passwordHash, firstName, lastName, defaultCurrency, email, registrationDate);
                 users.add(user);
             }
         } catch (SQLException e) {
@@ -52,6 +57,11 @@ public class UserDao implements BaseDao<User> {
         throw new UnsupportedOperationException("Finding user by ID is not supported yet.");
     }
 
+    @Override
+    public User findById(UUID id) throws DaoException {
+        return null;
+    }
+
     public User findByLogin(String login) throws DaoException {
         Connection connection = null;
         PreparedStatement statement;
@@ -62,12 +72,14 @@ public class UserDao implements BaseDao<User> {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 int id = resultSet.getInt("id");
-                String password = resultSet.getString("password");
-                String email = resultSet.getString("email");
+                String passwordHash = resultSet.getString("password_hash");
                 String firstName = resultSet.getString("first_name");
                 String lastName = resultSet.getString("last_name");
-                // Create a User object
-                return new User(id, login, password, email, firstName, lastName);
+                int defaultCurrency = Integer.parseInt(resultSet.getString("default_currency"));
+                String email = resultSet.getString("email");
+                Timestamp registrationDate = resultSet.getTimestamp("registration_date");
+                // Create User objects and add them to the list
+                return new User(id, login, passwordHash, firstName, lastName, defaultCurrency, email, registrationDate);
             }
         } catch (SQLException e) {
             logger.error("Error while retrieving a user by login from the database", e);
@@ -89,12 +101,15 @@ public class UserDao implements BaseDao<User> {
             statement = connection.prepareStatement(INSERT_USER);
 
             statement.setString(1, user.getLogin());
-            statement.setString(2, user.getPassword());
-            statement.setString(3, user.getEmail());
-            statement.setString(4, user.getFirstName());
-            statement.setString(5, user.getLastName());
-            statement.executeUpdate();
-            return true;
+            statement.setString(2, user.getPasswordHash());
+            statement.setString(3, user.getFirstName());
+            statement.setString(4, user.getLastName());
+            statement.setInt(5, user.getDefaultCurrency());
+            statement.setString(6, user.getEmail());
+            statement.setTimestamp(7, new java.sql.Timestamp(user.getRegistrationDate().getTime()));
+            int result = statement.executeUpdate();
+            logger.debug("New user creation in database returned: {}", result);
+            return result > 0;
         } catch (SQLException e) {
             logger.error("Error while adding a user to the database", e);
             throw new DaoException("Error while adding a user to the database", e);

@@ -1,59 +1,32 @@
 package lt.ehu.student.moneytrackerbeta.model;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 public class Asset extends AbstractModel {
-    private String id;
+    private final UUID id;
     private int userId;
+    private int typeId;
     private String name;
+    private BigDecimal balance;
+    private int currencyId;
     private String description;
-    private BigDecimal initBalance;
-    private BigDecimal currentBalance;
-    private int currency;
-    private int type;
 
-    public Asset(String id, int userId, String name, String description, BigDecimal initBalance, BigDecimal currentBalance, int currency, int type) {
+    public Asset(UUID id, int userId, int typeId, String name, BigDecimal balance, int currencyId, String description) {
         this.id = id;
         this.userId = userId;
+        this.typeId = typeId;
         this.name = name;
+        this.balance = balance;
+        this.currencyId = currencyId;
         this.description = description;
-        this.initBalance = initBalance;
-        this.currentBalance = currentBalance;
-        this.currency = currency;
-        this.type = type;
     }
     public Asset() {
-        this.userId = 0;
-        this.name = null;
-        this.description = null;
-        this.initBalance = null;
-        this.currentBalance = null;
-        this.currency = 0;
-        this.type = 0;
+        this.id = UUID.randomUUID();
+        this.balance  = new BigDecimal("0.00");
     }
 
-    public Asset(int userId, String name, String description, BigDecimal initBalance, BigDecimal currentBalance, int currency, int type) {
-        this.userId = userId;
-        this.name = name;
-        this.description = description;
-        this.initBalance = initBalance;
-        this.currentBalance = currentBalance;
-        this.currency = currency;
-        this.type = type;
-    }
-
-    public Asset(int userId, String name, BigDecimal initBalance) {
-        this.userId = userId;
-        this.name = name;
-        this.description = null;
-        this.initBalance = initBalance;
-        this.currentBalance = initBalance;
-        this.currency = 1;
-        this.type = 3;
-    }
-
-
-    public String getId() {
+    public UUID getId() {
         return id;
     }
     public int getUserId() {
@@ -74,38 +47,31 @@ public class Asset extends AbstractModel {
     public void setDescription(String description) {
         this.description = description;
     }
-    public BigDecimal getInitBalance() {
-        return initBalance;
+    public BigDecimal getBalance() {
+        return balance;
     }
-    public void setInitBalance(BigDecimal initBalance) {
-        this.initBalance = initBalance;
+    public void setBalance(BigDecimal balance) {
+        this.balance = balance;
     }
-    public BigDecimal getCurrentBalance() {
-        return currentBalance;
+    public int getCurrencyId() {
+        return currencyId;
     }
-    public void setCurrentBalance(BigDecimal currentBalance) {
-        this.currentBalance = currentBalance;
+    public void setCurrencyId(int currencyId) {
+        this.currencyId = currencyId;
     }
-    public int getCurrency() {
-        return currency;
+    public int getTypeId() {
+        return typeId;
     }
-    public void setCurrency(int currency) {
-        this.currency = currency;
-    }
-
-    public int getType() {
-        return type;
-    }
-    public void setType(int type) {
-        this.type = type;
+    public void setTypeId(int typeId) {
+        this.typeId = typeId;
     }
     public boolean isAccount() {
-        return type == 3;
+        return typeId == TransactionType.ACCOUNT.getId();
     }
     public boolean isIncome() {
-        return type == 1;
+        return typeId == TransactionType.INCOME.getId();
     }
     public boolean isExpense() {
-        return type == 2;
+        return typeId == TransactionType.EXPENSE.getId();
     }
 }

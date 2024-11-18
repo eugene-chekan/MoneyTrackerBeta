@@ -1,4 +1,4 @@
 package lt.ehu.student.moneytrackerbeta.model;
 
-public class AbstractModel {
+public abstract class AbstractModel {
 }

@@ -1,30 +1,30 @@
 package lt.ehu.student.moneytrackerbeta.model;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
 public class User extends AbstractModel {
-    private final int id;
+    private int id;
     private String login;
-    private String password;
-    private String email;
+    private String passwordHash;
     private String firstName;
     private String lastName;
+    private int defaultCurrency;
+    private String email;
+    private Timestamp registrationDate;
 
-    public User(int id, String login, String password, String email, String firstName, String lastName) {
+    public User(int id, String login, String passwordHash, String firstName, String lastName, int defaultCurrency, String email, Timestamp registrationDate) {
         this.id = id;
         this.login = login;
-        this.password = password;
-        this.email = email;
+        this.passwordHash = passwordHash;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.defaultCurrency = defaultCurrency;
+        this.email = email;
+        this.registrationDate = registrationDate;
     }
 
-    public User(String login, String password, String email, String firstName, String lastName) {
-        this.id = -1;
-        this.login = login;
-        this.password = password;
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
-    }
+    public User() {}
 
     public int getId() {
         return id;
@@ -38,12 +38,12 @@ public class User extends AbstractModel {
         this.login = login;
     }
 
-    public String getPassword() {
-        return password;
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     public String getEmail() {
@@ -70,12 +70,28 @@ public class User extends AbstractModel {
         this.lastName = lastName;
     }
 
+    public int getDefaultCurrency() {
+        return defaultCurrency;
+    }
+
+    public void setDefaultCurrency(int defaultCurrency) {
+        this.defaultCurrency = defaultCurrency;
+    }
+
+    public Date getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(Timestamp registrationDate) {
+        this.registrationDate = registrationDate;
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
                 ", login='" + login + '\'' +
-                ", password='" + password + '\'' +
+                ", password='" + passwordHash + '\'' +
                 ", email='" + email + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +

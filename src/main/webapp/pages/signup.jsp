@@ -1,4 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="lt.ehu.student.moneytrackerbeta.model.CurrencyEnum" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -32,12 +34,25 @@
             display: flex;
             flex-direction: column;
         }
-        input {
+        input, select {
             margin-bottom: 1rem;
             padding: 0.5rem;
             border: 1px solid #ddd;
             border-radius: 4px;
             font-size: 1rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        select {
+            background-color: #fff;
+            color: #333;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="gray"><polygon points="0,0 16,0 8,10" /></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px top 50%;
+            padding-right: 1.5rem;
         }
         button {
             background-color: #4CAF50;
@@ -70,8 +85,8 @@
 </head>
 <body>
     <div class="login-container">
-        <h1>Sign Up for MoneyTracker</h1>
         <form name="SignUpAction" action="${pageContext.request.contextPath}/controller" method="post">
+            <h1>Sign Up for MoneyTracker</h1>
             <input type="hidden" name="command" value="signup">
             <input type="text" name="username" placeholder="Username" required>
             <input type="text" name="firstName" placeholder="First name" required>
@@ -79,10 +94,19 @@
             <input type="email" name="email" placeholder="Email" required>
             <input type="password" name="password" placeholder="Password" required>
             <input type="password" name="confirmPassword" placeholder="Confirm Password" required checked>
+            <!-- Currency Dropdown -->
+            <label for="default_curr">Choose your currency:</label>
+            <select name="default_curr" id="default_curr" required>
+                <c:forEach var="currency" items="<%= CurrencyEnum.values() %>">
+                    <option value="${currency.id}">
+                            ${currency.symbol} - ${currency.name}
+                    </option>
+                </c:forEach>
+            </select>
             <button type="submit">Sign Up</button><br/>
-        <div class="error-message">
-            ${errorUserNameTaken}${errorPasswordMismatch}${errorMessage}
-        </div>
+            <div class="error-message">
+                ${errorUserNameTaken}${errorPasswordMismatch}${errorMessage}
+            </div>
         </form>
         <div class="signup-link">
             <p>Already have an account? <a href="${pageContext.request.contextPath}/index.jsp">Login</a></p>

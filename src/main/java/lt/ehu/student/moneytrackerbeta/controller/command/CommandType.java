@@ -9,6 +9,7 @@ public enum CommandType {
     NEW_TRANSACTION(new NewTransactionCommand()),
     SIGNUP(new SignUpCommand()),
     SUBMIT_TRANSACTION(new SubmitTransactionCommand()),
+    VIEW_TRANSACTIONS(new ViewTransactionsCommand()),
 
     DEFAULT(new DefaultCommand());
     final Command command;

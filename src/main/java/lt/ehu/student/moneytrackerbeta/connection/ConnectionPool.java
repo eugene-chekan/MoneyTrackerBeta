@@ -34,7 +34,7 @@ public class ConnectionPool {
 
     private ConnectionPool() {
         Properties props = new Properties();
-        try (InputStream input = getClass().getClassLoader().getResourceAsStream("db.properties")) {
+        try (InputStream input = getClass().getClassLoader().getResourceAsStream("db/db.properties")) {
             props.load(input);
         } catch (IOException e) {
             logger.fatal("Failed to load properties.", e);
@@ -59,14 +59,16 @@ public class ConnectionPool {
     }
 
     public static ConnectionPool getInstance() {
-        lock.lock();
-        try {
-            if (instance == null) {
-                instance = new ConnectionPool();
-                logger.debug("Connection pool created.");
+        if (instance == null) {
+            lock.lock();
+            try {
+                if (instance == null) {
+                    instance = new ConnectionPool();
+                    logger.debug("Connection pool created.");
+                }
+            } finally {
+                lock.unlock();
             }
-        } finally {
-            lock.unlock();
         }
         logger.debug("Existing connection pool returned.");
         return instance;

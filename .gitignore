@@ -25,4 +25,4 @@ replay_pid*
 /.idea/
 /logs/
 /target/
-src/main/resources/db.properties
+src/main/resources/db/db.properties

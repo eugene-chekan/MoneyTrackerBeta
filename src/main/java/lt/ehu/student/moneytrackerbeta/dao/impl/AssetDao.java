@@ -12,13 +12,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.UUID;
 
 public class AssetDao implements BaseDao<Asset> {
     private static final Logger logger = LogManager.getLogger(AssetDao.class);
-    private static final String SELECT_ASSETS_BY_USER_ID = "SELECT id, user_id, name, description, init_balance, current_balance, currency, type FROM public.asset WHERE user_id = ?";
-    private static final String SELECT_ASSETS_BY_USER_ID_AND_TYPE = "SELECT id, user_id, name, description, init_balance, current_balance, currency, type FROM public.asset WHERE user_id = ? AND type = ?";
-    private static final String SELECT_ASSET_BY_USER_ID_AND_NAME = "SELECT id, user_id, name, description, init_balance, current_balance, currency, type FROM public.asset WHERE user_id = ? AND name = ?";
-    private static final String INSERT_ASSET = "INSERT INTO public.asset (user_id, name, description, init_balance, current_balance, currency, type) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    private static final String SELECT_ASSET_BY_ID = "SELECT id, user_id, type_id, name, balance, currency_id, description FROM public.asset WHERE id = ?";
+    private static final String SELECT_ASSETS_BY_USER_ID = "SELECT id, user_id, type_id, name, balance, currency_id, description FROM public.asset WHERE user_id = ?";
+    private static final String SELECT_ASSETS_BY_USER_ID_AND_TYPE = "SELECT id, user_id, type_id, name, balance, currency_id, description FROM public.asset WHERE user_id = ? AND type_id = ?";
+    private static final String SELECT_ASSET_BY_USER_ID_AND_NAME = "SELECT id, user_id, type_id, name, balance, currency_id, description FROM public.asset WHERE user_id = ? AND name = ?";
+    private static final String INSERT_ASSET = "INSERT INTO public.asset (id, user_id, type_id, name, balance, currency_id, description) VALUES (?, ?, ?, ?, ?, ?, ?)";
     @Override
     public boolean create(Asset asset) throws DaoException, SQLException {
         logger.info("Creating new asset: {}", asset.getName());
@@ -29,13 +31,13 @@ public class AssetDao implements BaseDao<Asset> {
             connection = ConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(INSERT_ASSET);
 
-            statement.setInt(1, asset.getUserId());
-            statement.setString(2, asset.getName());
-            statement.setString(3, asset.getDescription());
-            statement.setBigDecimal(4, asset.getInitBalance());
-            statement.setBigDecimal(5, asset.getCurrentBalance());
-            statement.setInt(6, asset.getCurrency());
-            statement.setInt(7, asset.getType());
+            statement.setObject(1, asset.getId());
+            statement.setInt(2, asset.getUserId());
+            statement.setInt(3, asset.getTypeId());
+            statement.setString(4, asset.getName());
+            statement.setBigDecimal(5, asset.getBalance());
+            statement.setInt(6, asset.getCurrencyId());
+            statement.setString(7, asset.getDescription());
             statement.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -63,6 +65,11 @@ public class AssetDao implements BaseDao<Asset> {
         return List.of();
     }
 
+    @Override
+    public Asset findById(int id) throws DaoException {
+        return null;
+    }
+
     public List<Asset> findAllByUserId(int userId) throws DaoException, SQLException {
         logger.info("Finding all assets by user ID: {}", userId);
         PreparedStatement statement;
@@ -83,19 +90,46 @@ public class AssetDao implements BaseDao<Asset> {
     }
 
     @Override
-    public Asset findById(int id) throws DaoException {
+    public Asset findById(UUID id) throws DaoException {
+        logger.debug("Finding asset by ID: {}", id);
+        PreparedStatement statement;
+        Connection connection = null;
+        try {
+            connection = ConnectionPool.getInstance().getConnection();
+            statement = connection.prepareStatement(SELECT_ASSET_BY_ID);
+            statement.setObject(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                return new Asset(
+                        resultSet.getObject("id", UUID.class),
+                        resultSet.getInt("user_id"),
+                        resultSet.getInt("type_id"),
+                        resultSet.getString("name"),
+                        resultSet.getBigDecimal("balance"),
+                        resultSet.getInt("currency_id"),
+                        resultSet.getString("description")
+                );
+            }
+        } catch (SQLException e) {
+            logger.error("Error while retrieving asset from the database", e);
+            throw new DaoException("Error while retrieving asset from the database", e);
+        } finally {
+            if (connection != null) {
+                ConnectionPool.getInstance().releaseConnection(connection);
+            }
+        }
         return null;
     }
 
-    public List<Asset> findAllByUserIdAndType(int userId, int type) throws DaoException {
-        logger.debug("Finding all assets by user ID and type: {}, {}", userId, type);
+    public List<Asset> findAllByUserIdAndType(int userId, int typeId) throws DaoException {
+        logger.debug("Finding all assets by user ID and type: {}, {}", userId, typeId);
         PreparedStatement statement;
         Connection connection = null;
         try {
             connection = ConnectionPool.getInstance().getConnection();
             statement = connection.prepareStatement(SELECT_ASSETS_BY_USER_ID_AND_TYPE);
             statement.setInt(1, userId);
-            statement.setInt(2, type);
+            statement.setInt(2, typeId);
             return getAssets(statement);
         } catch (SQLException e) {
             logger.error("Error while retrieving assets from the database", e);
@@ -119,14 +153,13 @@ public class AssetDao implements BaseDao<Asset> {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 return new Asset(
-                        resultSet.getString("id"),
+                        resultSet.getObject("id", UUID.class),
                         resultSet.getInt("user_id"),
+                        resultSet.getInt("type_id"),
                         resultSet.getString("name"),
-                        resultSet.getString("description"),
-                        resultSet.getBigDecimal("init_balance"),
-                        resultSet.getBigDecimal("current_balance"),
-                        resultSet.getInt("currency"),
-                        resultSet.getInt("type")
+                        resultSet.getBigDecimal("balance"),
+                        resultSet.getInt("currency_id"),
+                        resultSet.getString("description")
                 );
             }
         } catch (SQLException e) {
@@ -145,15 +178,14 @@ public class AssetDao implements BaseDao<Asset> {
         var assets = new java.util.ArrayList<Asset>();
         while (resultSet.next()) {
             var asset = new Asset(
-                    resultSet.getString("id"),
+                    resultSet.getObject("id", UUID.class),
                     resultSet.getInt("user_id"),
+                    resultSet.getInt("type_id"),
                     resultSet.getString("name"),
-                    resultSet.getString("description"),
-                    resultSet.getBigDecimal("init_balance"),
-                    resultSet.getBigDecimal("current_balance"),
-                    resultSet.getInt("currency"),
-                    resultSet.getInt("type")
-            );
+                    resultSet.getBigDecimal("balance"),
+                    resultSet.getInt("currency_id"),
+                    resultSet.getString("description")
+                    );
             assets.add(asset);
         }
         return assets;

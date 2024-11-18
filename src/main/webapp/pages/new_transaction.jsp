@@ -1,5 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<jsp:useBean id="now" class="java.util.Date"/>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -38,7 +40,18 @@
         display: block;
         margin-bottom: 5px;
     }
+    input[type="date"] {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
 
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        cursor: pointer;
+        padding: 5px;
+    }
     input[type="text"],
     input[type="number"],
     select {
@@ -100,52 +113,83 @@
     }
 </style>
 <script>
+    const transactionConfig = {
+        types: {
+            <c:forEach items="${transactionTypes}" var="type" varStatus="status">
+                "${type.name}": {
+                    id: "${type.id}",
+                    name: "${type.name}"
+                }${!status.last ? ',' : ''}
+            </c:forEach>
+        }
+    };
+
     function updateSourceOptions() {
         const typeSelect = document.getElementById("type");
         const sourceContainer = document.getElementById("source");
-
         const selectedType = typeSelect.value;
-        sourceContainer.innerHTML = ""; // Reset options container
 
-        // Dynamically generate options based on a transaction type
-        if (selectedType === "income") {
-            options = `<c:forEach items="${incomeSources}" var="account">
-                              <option value="${account.name}">${account.name}</option>
-                       </c:forEach>`;
-        } else if (selectedType === "expense") {
-            options = `<c:forEach items="${accounts}" var="account">
-                              <option value="${account.name}">${account.name}</option>
-                       </c:forEach>`;
-        } else if (selectedType === "transfer") {
-            options = `<c:forEach items="${accounts}" var="account">
-                              <option value="${account.name}">${account.name}</option>
-                       </c:forEach>`;
+        // Create a new select element
+        let selectElement = document.createElement("select");
+        selectElement.name = "source";
+        selectElement.id = "source";
+        selectElement.required = true;
+
+        // Add options based on selected type
+        if (selectedType === transactionConfig.types.INCOME.id) {
+            <c:forEach items="${incomeSources}" var="account">
+            let option = new Option("${account.name}", "${account.id}");
+            selectElement.add(option);
+            </c:forEach>
+        } else if (selectedType === transactionConfig.types.EXPENSE.id) {
+            <c:forEach items="${accounts}" var="account">
+            let option = new Option("${account.name}", "${account.id}");
+            selectElement.add(option);
+            </c:forEach>
+        } else if (selectedType === transactionConfig.types.TRANSFER.id) {
+            <c:forEach items="${accounts}" var="account">
+            let option = new Option("${account.name}", "${account.id}");
+            selectElement.add(option);
+            </c:forEach>
         }
-        sourceContainer.innerHTML = options;
+
+        // Replace the old select with the new one
+        sourceContainer.parentNode.replaceChild(selectElement, sourceContainer);
     }
+
     function updateDestinationOptions() {
         const typeSelect = document.getElementById("type");
         const destinationContainer = document.getElementById("destination");
-
         const selectedType = typeSelect.value;
-        destinationContainer.innerHTML = ""; // Reset options container
 
-        // Dynamically generate options based on a transaction type
-        if (selectedType === "income") {
-            options = `<c:forEach items="${accounts}" var="account">
-                              <option value="${account.name}">${account.name}</option>
-                       </c:forEach>`;
-        } else if (selectedType === "expense") {
-            options = `<c:forEach items="${expenseSources}" var="account">
-                              <option value="${account.name}">${account.name}</option>
-                       </c:forEach>`;
-        } else if (selectedType === "transfer") {
-            options = `<c:forEach items="${accounts}" var="account">
-                              <option value="${account.name}">${account.name}</option>
-                       </c:forEach>`;
+        // Create a new select element
+        let selectElement = document.createElement("select");
+        selectElement.name = "destination";
+        selectElement.id = "destination";
+        selectElement.required = true;
+
+        // Add options based on selected type
+        if (selectedType === transactionConfig.types.INCOME.id) {
+            <c:forEach items="${accounts}" var="account">
+            let option = new Option("${account.name}", "${account.id}");
+            selectElement.add(option);
+            </c:forEach>
+        } else if (selectedType === transactionConfig.types.EXPENSE.id) {
+            <c:forEach items="${expenseSources}" var="account">
+            let option = new Option("${account.name}", "${account.id}");
+            selectElement.add(option);
+            </c:forEach>
+        } else if (selectedType === transactionConfig.types.TRANSFER.id) {
+            <c:forEach items="${accounts}" var="account">
+            let option = new Option("${account.name}", "${account.id}");
+            selectElement.add(option);
+            </c:forEach>
         }
-        destinationContainer.innerHTML = options;
+
+        // Replace the old select with the new one
+        destinationContainer.parentNode.replaceChild(selectElement, destinationContainer);
     }
+
     function updateOptions() {
         updateSourceOptions();
         updateDestinationOptions();
@@ -164,10 +208,10 @@
 
         <label for="type">Transaction Type:</label>
         <select name="type" id="type" required>
-            <option value="income">Income</option>
-            <option value="expense">Expense</option>
-            <option value="transfer">Transfer</option>
-        </select><br><br>
+            <c:forEach items="${transactionTypes}" var="transactionType">
+                <option value="${transactionType.id}">${transactionType.name}</option>
+            </c:forEach>
+        </select>
 
         <label for="source">Source Account:</label>
         <select name="source" id="source" required>
@@ -175,12 +219,18 @@
         </select>
 
         <label for="destination">Destination Account:</label>
-        <select name="source" id="destination" required>
+        <select name="destination" id="destination" required>
             <!-- Options will be populated dynamically -->
         </select>
 
         <label for="amount">Amount:</label>
-        <input type="number" name="amount" id="amount" step="0.01" required><br><br>
+        <input type="number" name="amount" id="amount" step="0.01" required>
+
+        <label for="transactionDate">Date:</label>
+        <input type="date" name="transactionDate" id="transactionDate"
+               value="<fmt:formatDate value="${now}" pattern="yyyy-MM-dd"/>"
+               max="<fmt:formatDate value="${now}" pattern="yyyy-MM-dd"/>"
+               required>
 
         <button type="submit" class="primary-button">Add Transaction</button>
         <button class="cancel-button" onclick="location.href='${pageContext.request.contextPath}/controller?command=dashboard'">Cancel</button>

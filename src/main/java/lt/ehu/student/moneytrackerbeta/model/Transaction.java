@@ -1,114 +1,101 @@
 package lt.ehu.student.moneytrackerbeta.model;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.UUID;
 
 public class Transaction extends AbstractModel {
-    private String id;
+    private final UUID id;
     private int userId;
-    private int type;
-    private String source;  // uuid type
-    private String destination; // uuid type
-    private String label;
-    private int date; // this is the creation timestamp
+    private int typeId;
+    private Timestamp timestamp; // this is the creation timestamp
+    private UUID sourceId;  // uuid type
+    private UUID destinationId; // uuid type
     private BigDecimal amount;
+    private int currencyId;
     private String comment;
-    private int currency;
 
-    public Transaction(String id, int userId, int type, String source, String destination, String label, int date, BigDecimal amount, String comment, int currency) {
+    public Transaction(UUID id, int userId, int typeId, Timestamp timestamp, UUID sourceId, UUID destinationId, BigDecimal amount, int currencyId, String comment) {
         this.id = id;
         this.userId = userId;
-        this.type = type;
-        this.source = source;
-        this.destination = destination;
-        this.label = label;
-        this.date = date;
+        this.typeId = typeId;
+        this.timestamp = timestamp;
+        this.sourceId = sourceId;
+        this.destinationId = destinationId;
         this.amount = amount;
+        this.currencyId = currencyId;
         this.comment = comment;
-        this.currency = currency;
     }
 
     public Transaction() {
-        this.userId = 0;
-        this.type = 0;
-        this.source = null;
-        this.destination = null;
-        this.label = null;
-        this.date = 0;
-        this.amount = null;
-        this.comment = null;
-        this.currency = 0;
+        this.id = UUID.randomUUID();
     }
-    public String getId() {
+
+    public UUID getId() {
         return id;
     }
+
     public int getUserId() {
         return userId;
     }
-    public int setUserId(int userId) {
-        return this.userId = userId;
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
-    public void setType(int type) {
-        this.type = type;
+    public int getTypeId() {
+        return typeId;
     }
 
-    public void setSource(String source) {
-        this.source = source;
+    public void setTypeId(int typeId) {
+        this.typeId = typeId;
     }
 
-    public void setDestination(String destination) {
-        this.destination = destination;
+    public Timestamp getTimestamp() {
+        return timestamp;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
     }
 
-    public void setDate(int date) {
-        this.date = date;
+    public UUID getSourceId() {
+        return sourceId;
     }
 
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
+    public void setSourceId(UUID sourceId) {
+        this.sourceId = sourceId;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
+    public UUID getDestinationId() {
+        return destinationId;
     }
 
-    public void setCurrency(int currency) {
-        this.currency = currency;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public String getSource() {
-        return source;
-    }
-
-    public String getDestination() {
-        return destination;
-    }
-
-    public String getLabel() {
-        return label;
-    }
-
-    public int getDate() {
-        return date;
+    public void setDestinationId(UUID destinationId) {
+        this.destinationId = destinationId;
     }
 
     public BigDecimal getAmount() {
         return amount;
     }
 
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public int getCurrencyId() {
+        return currencyId;
+    }
+
+    public void setCurrencyId(int currencyId) {
+        this.currencyId = currencyId;
+    }
+
     public String getComment() {
         return comment;
     }
 
-    public int getCurrency() {
-        return currency;
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }
