@@ -15,6 +15,7 @@ import java.util.List;
 public class NewTransactionCommand implements Command {
     private static final Logger logger = LogManager.getLogger(NewTransactionCommand.class);
 
+    @SuppressWarnings("unchecked")
     @Override
     public String execute(HttpServletRequest request) throws CommandException {
         HttpSession session = request.getSession();

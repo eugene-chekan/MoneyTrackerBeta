@@ -20,6 +20,7 @@ public class DashboardCommand implements Command {
         return prepareDashboard(request);
     }
 
+    @SuppressWarnings("unchecked")
     public static String prepareDashboard(HttpServletRequest request) {
         HttpSession session = request.getSession();
         boolean isLoggedIn = (boolean)session.getAttribute("isLoggedIn");
