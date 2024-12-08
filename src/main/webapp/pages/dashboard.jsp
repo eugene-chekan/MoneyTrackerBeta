@@ -104,8 +104,9 @@
         </c:forEach>
     </div>
     <div class="report">
-        <p>This month income: ${userCurrencySymbol} ${income}</p>
-        <p>This month expense: ${userCurrencySymbol} ${expense}</p>
+        <c:set var="userCurrency" value="${sessionScope.userDefaultCurrency}"/>
+        <p>This month income: ${income} ${userCurrency.symbol}</p>
+        <p>This month expense: ${expense} ${userCurrency.symbol}</p>
     </div>
 
     <!-- Conditionally display balance in green or red -->

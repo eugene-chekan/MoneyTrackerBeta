@@ -4,8 +4,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lt.ehu.student.moneytrackerbeta.controller.command.Command;
 import lt.ehu.student.moneytrackerbeta.exception.CommandException;
 import lt.ehu.student.moneytrackerbeta.exception.ServiceException;
-import lt.ehu.student.moneytrackerbeta.model.Transaction;
 import lt.ehu.student.moneytrackerbeta.model.User;
+import lt.ehu.student.moneytrackerbeta.model.dto.TransactionDto;
 import lt.ehu.student.moneytrackerbeta.service.impl.TransactionServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,7 +15,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.logging.ErrorManager;
 
 public class ViewTransactionsCommand implements Command {
     private static final Logger logger = LogManager.getLogger(ViewTransactionsCommand.class);
@@ -27,12 +26,17 @@ public class ViewTransactionsCommand implements Command {
         int type = Integer.parseInt(request.getParameter("type"));
         String fromDateStr = request.getParameter("dateFrom");
         String toDateStr = request.getParameter("dateTo");
-        LocalDateTime localDateTime = LocalDateTime.of(LocalDate.parse(fromDateStr), LocalTime.MIDNIGHT);
-        LocalDateTime localDateTime1 = LocalDateTime.of(LocalDate.parse(toDateStr), LocalTime.MIDNIGHT);
-        Timestamp fromDate = Timestamp.valueOf(localDateTime);
-        Timestamp toDate = Timestamp.valueOf(localDateTime1);
+        
+        // Start of the first day
+        LocalDateTime fromDateTime = LocalDateTime.of(LocalDate.parse(fromDateStr), LocalTime.MIDNIGHT);
+        // End of the last day (23:59:59.999999999)
+        LocalDateTime toDateTime = LocalDateTime.of(LocalDate.parse(toDateStr), LocalTime.MAX);
+        
+        Timestamp fromDate = Timestamp.valueOf(fromDateTime);
+        Timestamp toDate = Timestamp.valueOf(toDateTime);
+        
         try {
-            List<Transaction> transactions = transactionService.findFilteredTransactions(user.getId(), type, fromDate, toDate);
+            List<TransactionDto> transactions = transactionService.findFilteredTransactions(user.getId(), type, fromDate, toDate);
             request.setAttribute("transactions", transactions);
         } catch (ServiceException e) {
             logger.error("Error while retrieving transactions", e);

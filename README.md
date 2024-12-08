@@ -13,13 +13,13 @@ MoneyTrackerBeta is a web-based application designed to help users manage their 
 - Secure data storage and handling
 
 ## Technology Stack
-- Java (Backend)
+- Java 17 (Backend)
 - Apache Tomcat 10.1.30 (Web Server)
 - JDBC for database connectivity
 - Custom connection pooling for efficient database operations
 
 ## Installation
-1. Ensure you have Java JDK 11 or higher installed
+1. Ensure you have Java JDK 17 installed (Amazon Corretto 17 recommended)
 2. Download and install Apache Tomcat 10.1.30
 3. Clone the repository: `git clone git@github.com:eugene-chekan/moneyTrackerBeta.git`
 4. Deploy the application to Tomcat's webapps directory

@@ -6,6 +6,7 @@ import lt.ehu.student.moneytrackerbeta.exception.DaoException;
 import lt.ehu.student.moneytrackerbeta.exception.ServiceException;
 import lt.ehu.student.moneytrackerbeta.model.Asset;
 import lt.ehu.student.moneytrackerbeta.model.Transaction;
+import lt.ehu.student.moneytrackerbeta.model.dto.TransactionDto;
 import lt.ehu.student.moneytrackerbeta.service.TransactionService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,7 +53,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<Transaction> findFilteredTransactions(int userId, int type, Timestamp fromDate, Timestamp toDate) throws ServiceException {
+    public List<TransactionDto> findFilteredTransactions(int userId, int type, Timestamp fromDate, Timestamp toDate) throws ServiceException {
         TransactionDao transactionDao = new TransactionDao();
         Transaction transaction = new Transaction();
         transaction.setUserId(userId);

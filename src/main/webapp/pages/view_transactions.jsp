@@ -136,6 +136,47 @@
                 padding: 0.5rem;
             }
         }
+
+        .positive {
+            color: #2ecc71;
+        }
+        
+        .negative {
+            color: #e74c3c;
+        }
+
+        .transfer {
+            color: dimgray;
+        }
+        
+        .transactions-container table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .transactions-container th,
+        .transactions-container td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .transactions-container th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        
+        .transactions-container tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .no-transactions {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -194,46 +235,76 @@
             <c:when test="${not empty transactions}">
                 <table>
                     <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Type</th>
-                        <th>Amount</th>
-                        <th>From Account</th>
-                        <th>To Account</th>
-                        <th>Currency</th>
-                        <th>Comment</th>
-                        <th>Actions</th>
-                    </tr>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Amount</th>
+                            <th>Comment</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    <c:forEach items="${transactions}" var="transaction">
-                        <tr>
-                            <td>${transaction.timestamp}</td>
-                            <td>${transaction.typeId}</td>
-                            <td>${transaction.amount}</td>
-                            <td>${transaction.sourceId}</td>
-                            <td>${transaction.destinationId}</td>
-                            <td>${transaction.currencyId}</td>
-                            <td>${transaction.comment}</td>
-                            <td>
-                                <button onclick="window.location.href='${pageContext.request.contextPath}/controller?command=editTransaction&id=${transaction.id}'">
-                                    Edit
-                                </button>
-                            </td>
-                        </tr>
-                    </c:forEach>
+                        <c:forEach var="transaction" items="${transactions}">
+                            <tr>
+                                <td>
+                                    <fmt:formatDate value="${transaction.timestamp}" 
+                                                  pattern="yyyy-MM-dd HH:mm:ss"/>
+                                </td>
+                                <td>${transaction.transactionType}</td>
+                                <td>${transaction.sourceName}</td>
+                                <td>${transaction.destinationName}</td>
+                                <td>
+                                    <c:choose>
+                                        <c:when test="${transaction.transactionType == 'INCOME'}">
+                                            <span class="positive">
+                                                ${transaction.currencySymbol} 
+                                                <fmt:formatNumber value="${transaction.amount}" 
+                                                          pattern="#,##0.00"/>
+                                            </span>
+                                        </c:when>
+                                        <c:when test="${transaction.transactionType == 'EXPENSE'}">
+                                            <span class="negative">
+                                                ${transaction.currencySymbol} 
+                                                <fmt:formatNumber value="${transaction.amount}" 
+                                                          pattern="-#,##0.00"/>
+                                            </span>
+                                        </c:when>
+                                        <c:when test="${transaction.transactionType == 'TRANSFER'}">
+                                            <span class="transfer">
+                                                ${transaction.currencySymbol} 
+                                                <fmt:formatNumber value="${transaction.amount}" 
+                                                          pattern="#,##0.00"/>
+                                            </span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span>
+                                                ${transaction.currencySymbol} 
+                                                <fmt:formatNumber value="${transaction.amount}" 
+                                                          pattern="#,##0.00"/>
+                                            </span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td>${transaction.comment}</td>
+                            </tr>
+                        </c:forEach>
                     </tbody>
                 </table>
             </c:when>
             <c:otherwise>
                 <div class="no-transactions">
-                    No transactions found matching your criteria
+                    <p>No transactions found for the selected period.</p>
                 </div>
             </c:otherwise>
         </c:choose>
-    </div><br/>
-    <button class="cancel-button" onclick="location.href='${pageContext.request.contextPath}/controller?command=dashboard'">Cancel</button>
-    <a class="logout" href="${pageContext.request.contextPath}/controller?command=logout">Logout</a>
+    </div>
+    <br/>
+    <div class="navigation">
+        <a href="${pageContext.request.contextPath}/controller?command=dashboard" class="back-button">
+            Back to Dashboard
+        </a>
+    </div>
 </div>
 </body>
 </html>

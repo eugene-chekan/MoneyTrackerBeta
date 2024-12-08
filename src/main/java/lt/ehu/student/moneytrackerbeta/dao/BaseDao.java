@@ -1,8 +1,6 @@
 package lt.ehu.student.moneytrackerbeta.dao;
 import lt.ehu.student.moneytrackerbeta.exception.DaoException;
 import lt.ehu.student.moneytrackerbeta.model.AbstractModel;
-import lt.ehu.student.moneytrackerbeta.model.Asset;
-
 import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;

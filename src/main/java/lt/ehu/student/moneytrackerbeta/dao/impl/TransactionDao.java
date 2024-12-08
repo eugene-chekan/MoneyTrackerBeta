@@ -4,6 +4,7 @@ import lt.ehu.student.moneytrackerbeta.connection.ConnectionPool;
 import lt.ehu.student.moneytrackerbeta.dao.BaseDao;
 import lt.ehu.student.moneytrackerbeta.exception.DaoException;
 import lt.ehu.student.moneytrackerbeta.model.Transaction;
+import lt.ehu.student.moneytrackerbeta.model.dto.TransactionDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,7 +16,28 @@ public class TransactionDao implements BaseDao<Transaction> {
     private static final Logger logger = LogManager.getLogger(TransactionDao.class);
     private static final String SELECT_TRANSACTION_TYPE_BY_NAME = "SELECT id, name, description FROM public.transaction_type WHERE name = ?";
     private static final String INSERT_TRANSACTION = "INSERT INTO transaction (id, user_id, type, timestamp, source, destination, amount, currency_id, comment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-    private static final String SELECT_FILTERED_TRANSACTIONS = "SELECT * FROM transaction WHERE user_id = ? AND (? IS NULL OR type = ?) AND timestamp >= ? AND timestamp <= ? ORDER BY timestamp DESC";
+    private static final String SELECT_FILTERED_TRANSACTIONS = """
+        SELECT 
+            t.id,
+            t.user_id,
+            tt.name as transaction_type,
+            t.timestamp,
+            src.name as source_name,
+            dst.name as destination_name,
+            t.amount,
+            c.symbol as currency_symbol,
+            t.comment
+        FROM transaction t
+        JOIN transaction_type tt ON t.type = tt.id
+        JOIN currency c ON t.currency_id = c.id
+        LEFT JOIN asset src ON t.source = src.id
+        LEFT JOIN asset dst ON t.destination = dst.id
+        WHERE t.user_id = ? 
+            AND (? IS NULL OR t.type = ?)
+            AND t.timestamp >= ? 
+            AND t.timestamp <= ?
+        ORDER BY t.timestamp DESC
+    """;
 
     @Override
     public boolean create(Transaction transaction) throws DaoException {
@@ -93,10 +115,10 @@ public class TransactionDao implements BaseDao<Transaction> {
         return transactionTypeId;
     }
 
-    public List<Transaction> findFilteredTransactions(int userId, int type, Timestamp fromDate, Timestamp toDate) throws DaoException {
+    public List<TransactionDto> findFilteredTransactions(int userId, int type, Timestamp fromDate, Timestamp toDate) throws DaoException {
         PreparedStatement statement;
         Connection connection = null;
-        List<Transaction> transactions = new java.util.ArrayList<>();
+        List<TransactionDto> transactions = new java.util.ArrayList<>();
         try {
             int parameterIndex = 1;
             connection = ConnectionPool.getInstance().getConnection();
@@ -113,22 +135,21 @@ public class TransactionDao implements BaseDao<Transaction> {
             statement.setTimestamp(parameterIndex++, toDate);
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
-                transactions.add(new Transaction(
-                        resultSet.getObject("id", UUID.class),
-                        resultSet.getInt("user_id"),
-                        resultSet.getInt("type"),
-                        resultSet.getTimestamp("timestamp"),
-                        (UUID) resultSet.getObject("source"),
-                        (UUID) resultSet.getObject("destination"),
-                        resultSet.getBigDecimal("amount"),
-                        resultSet.getInt("currency_id"),
-                        resultSet.getString("comment")
+                transactions.add(new TransactionDto(
+                    resultSet.getObject("id", UUID.class),
+                    resultSet.getInt("user_id"),
+                    resultSet.getString("transaction_type"),
+                    resultSet.getTimestamp("timestamp"),
+                    resultSet.getString("source_name"),
+                    resultSet.getString("destination_name"),
+                    resultSet.getBigDecimal("amount"),
+                    resultSet.getString("currency_symbol"),
+                    resultSet.getString("comment")
                 ));
             }
             if (transactions.isEmpty()) {
                 logger.debug("No transactions found for the given criteria");
-            }
-            else {
+            } else {
                 logger.debug("Transactions found: {}", transactions.size());
             }
             return transactions;
