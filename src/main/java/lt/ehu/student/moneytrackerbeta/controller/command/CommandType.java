@@ -8,6 +8,7 @@ public enum CommandType {
     LOGOUT(new LogoutCommand()),
     NEW_TRANSACTION(new NewTransactionCommand()),
     SIGNUP(new SignUpCommand()),
+    SHOW_SIGNUP(new ShowSignUpPageCommand()),
     SUBMIT_TRANSACTION(new SubmitTransactionCommand()),
     VIEW_TRANSACTIONS(new ViewTransactionsCommand()),
 

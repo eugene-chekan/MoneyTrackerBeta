@@ -1,183 +1,14 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <jsp:useBean id="now" class="java.util.Date"/>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles.css">
     <title>MoneyTracker - View Transactions</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .container {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 1.5rem;
-        }
-
-        .filters {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        label {
-            margin-bottom: 0.5rem;
-            color: #666;
-        }
-
-        input, select {
-            margin-bottom: 1rem;
-            padding: 0.5rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 0.75rem;
-            border: none;
-            border-radius: 4px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #45a049;
-        }
-
-        .cancel-button {
-            background-color: #DC3535E7;
-            color: white;
-            padding: 0.75rem;
-            border: none;
-            border-radius: 4px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .cancel-button:hover {
-            background-color: #CD3131E7;
-        }
-
-        .transactions-container {
-            margin-top: 2rem;
-            max-height: 500px;
-            overflow-y: auto;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        th {
-            background-color: #f8f8f8;
-            position: sticky;
-            top: 0;
-        }
-
-        tr:hover {
-            background-color: #f5f5f5;
-        }
-
-        .no-transactions {
-            text-align: center;
-            padding: 2rem;
-            color: #666;
-        }
-
-        .error-message {
-            color: #ff7f7f;
-            text-align: center;
-            margin-bottom: 1rem;
-        }
-
-        @media (max-width: 768px) {
-            .filters {
-                grid-template-columns: 1fr;
-            }
-
-            th, td {
-                padding: 0.5rem;
-            }
-        }
-
-        .positive {
-            color: #2ecc71;
-        }
-        
-        .negative {
-            color: #e74c3c;
-        }
-
-        .transfer {
-            color: dimgray;
-        }
-        
-        .transactions-container table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        
-        .transactions-container th,
-        .transactions-container td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .transactions-container th {
-            background-color: #f8f9fa;
-            font-weight: bold;
-        }
-        
-        .transactions-container tr:hover {
-            background-color: #f5f5f5;
-        }
-        
-        .no-transactions {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-            font-style: italic;
-        }
-    </style>
 </head>
 <body>
 <div class="container">
@@ -197,18 +28,6 @@
                 <input type="date" id="dateTo" name="dateTo" value="<fmt:formatDate value="${now}" pattern="yyyy-MM-dd"/>">
             </div>
 
-<%--            <div class="filter-group">--%>
-<%--                <label for="account">Account:</label>--%>
-<%--                <select id="account" name="account">--%>
-<%--                    <option value="">All Accounts</option>--%>
-<%--                    <c:forEach items="${accounts}" var="account">--%>
-<%--                        <option value="${account.id}" ${param.account eq account.id ? 'selected' : ''}>--%>
-<%--                                ${account.name}--%>
-<%--                        </option>--%>
-<%--                    </c:forEach>--%>
-<%--                </select>--%>
-<%--            </div>--%>
-
             <div class="filter-group">
                 <label for="type">Transaction Type:</label>
                 <select id="type" name="type">
@@ -225,7 +44,7 @@
             </div>
         </div>
 
-        <button type="submit">Apply Filters</button>
+        <button class="primary-button" type="submit">Apply Filters</button>
     </form>
 
     <div class="error-message">${errorMessage}</div>
