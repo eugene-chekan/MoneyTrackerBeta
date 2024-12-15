@@ -1,6 +1,7 @@
 package lt.ehu.student.moneytrackerbeta.dao.impl;
 
 import lt.ehu.student.moneytrackerbeta.connection.ConnectionPool;
+import lt.ehu.student.moneytrackerbeta.constant.DatabaseColumnName;
 import lt.ehu.student.moneytrackerbeta.exception.DaoException;
 import lt.ehu.student.moneytrackerbeta.model.TransactionType;
 import org.apache.logging.log4j.LogManager;
@@ -15,9 +16,9 @@ import java.util.List;
 
 public class TransactionTypeDao {
     private static final Logger logger = LogManager.getLogger(TransactionTypeDao.class.getName());
-    private static final String SELECT_ALL = "SELECT id, description, name FROM transaction_type ORDER BY id";
-    private static final String SELECT_DISPLAYABLE = "SELECT id, description, name FROM transaction_type WHERE name != 'Account' ORDER BY id";
-    private static final String SELECT_BY_NAME = "SELECT id, description, name FROM transaction_type WHERE name = ?";
+    private static final String SELECT_ALL = "SELECT " + DatabaseColumnName.TRANSACTION_TYPE_ID + ", " + DatabaseColumnName.TRANSACTION_TYPE_DESCRIPTION + ", " + DatabaseColumnName.TRANSACTION_TYPE_NAME + " FROM public.transaction_type ORDER BY " + DatabaseColumnName.TRANSACTION_TYPE_ID;
+    private static final String SELECT_DISPLAYABLE = "SELECT " + DatabaseColumnName.TRANSACTION_TYPE_ID + ", " + DatabaseColumnName.TRANSACTION_TYPE_DESCRIPTION + ", " + DatabaseColumnName.TRANSACTION_TYPE_NAME + " FROM public.transaction_type WHERE " + DatabaseColumnName.TRANSACTION_TYPE_NAME + " != '" + TransactionType.ACCOUNT + "' ORDER BY " + DatabaseColumnName.TRANSACTION_TYPE_ID;
+    private static final String SELECT_BY_NAME = "SELECT " + DatabaseColumnName.TRANSACTION_TYPE_ID + ", " + DatabaseColumnName.TRANSACTION_TYPE_DESCRIPTION + ", " + DatabaseColumnName.TRANSACTION_TYPE_NAME + " FROM public.transaction_type WHERE " + DatabaseColumnName.TRANSACTION_TYPE_NAME + " = ?";
 
     public List<TransactionType> findAll() throws DaoException {
         List<TransactionType> types = new ArrayList<>();
@@ -28,9 +29,9 @@ public class TransactionTypeDao {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 types.add(new TransactionType(
-                    resultSet.getInt("id"),
-                    resultSet.getString("description"),
-                    resultSet.getString("name")
+                    resultSet.getInt(DatabaseColumnName.TRANSACTION_TYPE_ID),
+                    resultSet.getString(DatabaseColumnName.TRANSACTION_TYPE_DESCRIPTION),
+                    resultSet.getString(DatabaseColumnName.TRANSACTION_TYPE_NAME)
                 ));
             }
             return types;
@@ -53,9 +54,9 @@ public class TransactionTypeDao {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 types.add(new TransactionType(
-                    resultSet.getInt("id"),
-                    resultSet.getString("description"),
-                    resultSet.getString("name")
+                    resultSet.getInt(DatabaseColumnName.TRANSACTION_TYPE_ID),
+                    resultSet.getString(DatabaseColumnName.TRANSACTION_TYPE_DESCRIPTION),
+                    resultSet.getString(DatabaseColumnName.TRANSACTION_TYPE_NAME)
                 ));
             }
             return types;
@@ -78,9 +79,9 @@ public class TransactionTypeDao {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 return new TransactionType(
-                    resultSet.getInt("id"),
-                    resultSet.getString("description"),
-                    resultSet.getString("name")
+                    resultSet.getInt(DatabaseColumnName.TRANSACTION_TYPE_ID),
+                    resultSet.getString(DatabaseColumnName.TRANSACTION_TYPE_DESCRIPTION),
+                    resultSet.getString(DatabaseColumnName.TRANSACTION_TYPE_NAME)
                 );
             }
             return null;

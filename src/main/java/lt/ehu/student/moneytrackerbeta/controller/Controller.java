@@ -5,6 +5,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lt.ehu.student.moneytrackerbeta.connection.ConnectionPool;
 import lt.ehu.student.moneytrackerbeta.controller.command.Command;
 import lt.ehu.student.moneytrackerbeta.controller.command.CommandType;
 import lt.ehu.student.moneytrackerbeta.exception.CommandException;
@@ -13,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
-@WebServlet(name = "helloServlet", value = "/controller")
+@WebServlet(name = "Controller", value = "/controller")
 public class Controller extends HttpServlet {
     private static final Logger logger = LogManager.getLogger(Controller.class.getName());
 
@@ -56,6 +57,8 @@ public class Controller extends HttpServlet {
     }
 
     public void destroy() {
+        ConnectionPool.getInstance().closePool();
+        logger.info("Connection pool closed.");
         logger.info("Servlet destroyed.");
     }
 }

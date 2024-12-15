@@ -1,6 +1,7 @@
 package lt.ehu.student.moneytrackerbeta.dao.impl;
 
 import lt.ehu.student.moneytrackerbeta.connection.ConnectionPool;
+import lt.ehu.student.moneytrackerbeta.constant.DatabaseColumnName;
 import lt.ehu.student.moneytrackerbeta.dao.BaseDao;
 import lt.ehu.student.moneytrackerbeta.exception.DaoException;
 import lt.ehu.student.moneytrackerbeta.model.Transaction;
@@ -14,8 +15,7 @@ import java.util.UUID;
 
 public class TransactionDao implements BaseDao<Transaction> {
     private static final Logger logger = LogManager.getLogger(TransactionDao.class.getName());
-    private static final String SELECT_TRANSACTION_TYPE_BY_NAME = "SELECT id, name, description FROM public.transaction_type WHERE name = ?";
-    private static final String INSERT_TRANSACTION = "INSERT INTO transaction (id, user_id, type, timestamp, source, destination, amount, currency_id, comment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    private static final String INSERT_TRANSACTION = "INSERT INTO transaction (" + DatabaseColumnName.TRANSACTION_ID + ", " + DatabaseColumnName.TRANSACTION_USER_ID + ", " + DatabaseColumnName.TRANSACTION_TYPE + ", " + DatabaseColumnName.TRANSACTION_TIMESTAMP + ", " + DatabaseColumnName.TRANSACTION_SOURCE + ", " + DatabaseColumnName.TRANSACTION_DESTINATION + ", " + DatabaseColumnName.TRANSACTION_AMOUNT + ", " + DatabaseColumnName.TRANSACTION_CURRENCY + ", " + DatabaseColumnName.TRANSACTION_COMMENT + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String SELECT_FILTERED_TRANSACTIONS = """
         SELECT 
             t.id,
@@ -91,28 +91,6 @@ public class TransactionDao implements BaseDao<Transaction> {
     @Override
     public Transaction findById(UUID id) throws DaoException {
         return null;
-    }
-
-    public int findTypeByName(String name) throws DaoException {
-        PreparedStatement statement;
-        Connection connection = null;
-        int transactionTypeId = -1;
-        try {
-            connection = ConnectionPool.getInstance().getConnection();
-            statement = connection.prepareStatement(SELECT_TRANSACTION_TYPE_BY_NAME);
-            statement.setString(1, name);
-            ResultSet resultSet = statement.executeQuery();
-            if (resultSet.next()) {
-                transactionTypeId = resultSet.getInt("id");
-            }
-        } catch (SQLException e) {
-            throw new DaoException("Error while retrieving transaction type from the database", e);
-        } finally {
-            if (connection != null) {
-                ConnectionPool.getInstance().releaseConnection(connection);
-            }
-        }
-        return transactionTypeId;
     }
 
     public List<TransactionDto> findFilteredTransactions(int userId, int type, Timestamp fromDate, Timestamp toDate) throws DaoException {

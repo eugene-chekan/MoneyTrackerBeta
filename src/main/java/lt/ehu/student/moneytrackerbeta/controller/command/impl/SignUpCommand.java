@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lt.ehu.student.moneytrackerbeta.constant.PagePath;
 import lt.ehu.student.moneytrackerbeta.controller.command.Command;
 import lt.ehu.student.moneytrackerbeta.exception.CommandException;
 import lt.ehu.student.moneytrackerbeta.exception.ServiceException;
@@ -30,39 +31,39 @@ public class SignUpCommand implements Command {
         lastName = ValidationUtil.sanitizeInput(lastName);
         email = ValidationUtil.sanitizeInput(email);
         if (!ValidationUtil.isValidInput(username) || !ValidationUtil.isValidInput(password) || !ValidationUtil.isValidInput(confirmPassword) || !ValidationUtil.isValidInput(firstName) || !ValidationUtil.isValidInput(lastName) || !ValidationUtil.isValidInput(email)) {
-            logger.warn("Invalid input during registration provided by user: %s", username);
+            logger.warn("Invalid input during registration provided by user: {}", username);
             request.setAttribute("errorMessage", "Invalid input. Verify your input and try again.");
-            return "pages/signup.jsp";
+            return PagePath.SIGNUP;
         }
         try {
             if (userService.isUsernameTaken(username)) {
-                logger.warn("Username already taken: %s", username);
+                logger.warn("Username already taken: {}", username);
                 request.setAttribute("errorUserNameTaken", "Username is already taken. Try a different one.");
-                return "pages/signup.jsp";
+                return PagePath.SIGNUP;
             }
         } catch (ServiceException e) {
-            logger.error("An error occurred while checking username availability: %s", username);
+            logger.error("An error occurred while checking username availability: {}", username);
             request.setAttribute("errorMessage", "An error occurred while checking username availability.");
-            return "pages/signup.jsp";
+            return PagePath.SIGNUP;
         }
         if (!password.equals(confirmPassword)) {
-            logger.warn("Password mismatch: %s", username);
+            logger.warn("Password mismatch: {}", username);
             request.setAttribute("errorPasswordMismatch", "Passwords do not match.");
-            return "pages/signup.jsp";
+            return PagePath.SIGNUP;
         }
         try {
             if (!userService.registerUser(username, password, firstName, lastName, defaultCurrency, email)) {
-                logger.error("An error occurred while registering the user: %s", username);
+                logger.error("An error occurred while registering the user: {}", username);
                 request.setAttribute("errorMessage", "An error occurred while registering the user.");
-                return "pages/signup.jsp";
+                return PagePath.SIGNUP;
             };
         } catch (ServiceException e) {
-            logger.error("An error occurred while registering the user: %s", username);
+            logger.error("An error occurred while registering the user: {}", username);
             request.setAttribute("errorMessage", "An error occurred while registering the user.");
-            return "pages/signup.jsp";
+            return PagePath.SIGNUP;
         }
         request.setAttribute("firstName", firstName);
-        logger.info("User registered successfully: %s", username);
-        return "pages/signup_success.jsp";
+        logger.info("User registered successfully: {}", username);
+        return PagePath.SIGNUP_SUCCESS;
     }
 }

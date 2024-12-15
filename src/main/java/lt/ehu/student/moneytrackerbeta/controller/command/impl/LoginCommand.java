@@ -2,6 +2,7 @@ package lt.ehu.student.moneytrackerbeta.controller.command.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import lt.ehu.student.moneytrackerbeta.constant.PagePath;
 import lt.ehu.student.moneytrackerbeta.controller.command.Command;
 import lt.ehu.student.moneytrackerbeta.exception.ServiceException;
 import lt.ehu.student.moneytrackerbeta.model.Asset;
@@ -33,7 +34,7 @@ public class LoginCommand implements Command {
         if (!ValidationUtil.isValidInput(username) || !ValidationUtil.isValidInput(password)) {
             logger.warn("Invalid input during login provided by user: %s", username);
             request.setAttribute("errorMessage", "Invalid input. Verify your input and try again.");
-            return "pages/login.jsp";
+            return PagePath.LOGIN;
         }
         String page;
         try {
@@ -65,14 +66,14 @@ public class LoginCommand implements Command {
 
                 page = DashboardCommand.prepareDashboard(request);
             } else {
-                logger.warn("Invalid username or password provided by user: %s", username);
+                logger.warn("Invalid username or password provided by user: {}", username);
                 request.setAttribute("errorUserPassMessage", "Invalid username or password");
-                page = "pages/login.jsp";
+                page = PagePath.LOGIN;
             }
         } catch (ServiceException e) {
-            logger.error("An error occurred while logging in: %s", username);
+            logger.error("An error occurred while logging in: {}", username);
             request.setAttribute("errorMessage", "An error occurred while logging in. Try again later.");
-            page = "pages/login.jsp";
+            page = PagePath.LOGIN;
         } catch (DaoException e) {
             logger.error("Error while retrieving user data", e);
             throw new CommandException("Error while retrieving user data", e);

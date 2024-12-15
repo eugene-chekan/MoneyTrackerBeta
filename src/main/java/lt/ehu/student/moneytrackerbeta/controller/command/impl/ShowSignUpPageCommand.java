@@ -1,5 +1,6 @@
 package lt.ehu.student.moneytrackerbeta.controller.command.impl;
 
+import lt.ehu.student.moneytrackerbeta.constant.PagePath;
 import lt.ehu.student.moneytrackerbeta.controller.command.Command;
 import jakarta.servlet.http.HttpServletRequest;
 import lt.ehu.student.moneytrackerbeta.dao.impl.CurrencyDao;
@@ -24,6 +25,6 @@ public class ShowSignUpPageCommand implements Command {
             logger.error("Error fetching currencies", e);
             throw new CommandException("Error fetching currencies", e);
         }
-        return "pages/signup.jsp";
+        return PagePath.SIGNUP;
     }
 } 

@@ -2,6 +2,7 @@ package lt.ehu.student.moneytrackerbeta.controller.command.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import lt.ehu.student.moneytrackerbeta.constant.PagePath;
 import lt.ehu.student.moneytrackerbeta.controller.command.Command;
 import lt.ehu.student.moneytrackerbeta.exception.CommandException;
 import lt.ehu.student.moneytrackerbeta.model.Asset;
@@ -28,7 +29,7 @@ public class NewTransactionCommand implements Command {
         if (!isLoggedIn) {
             logger.warn("User is not logged in");
             request.setAttribute("errorMessage", "You must be logged in to add a transaction.");
-            return "pages/login.jsp";
+            return PagePath.LOGIN;
         }
         return NewTransactionCommand.prepareTransactionForm(request, firstName, accounts, incomes, expenses, types);
 
@@ -41,6 +42,6 @@ public class NewTransactionCommand implements Command {
         request.setAttribute("transactionTypes", types);
         request.setAttribute("now", new Timestamp(System.currentTimeMillis()));
         request.setAttribute("userName", firstName);
-        return "pages/new_transaction.jsp";
+        return PagePath.NEW_TRANSACTION;
     }
 }

@@ -1,6 +1,7 @@
 package lt.ehu.student.moneytrackerbeta.controller.command.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lt.ehu.student.moneytrackerbeta.constant.PagePath;
 import lt.ehu.student.moneytrackerbeta.controller.command.Command;
 import lt.ehu.student.moneytrackerbeta.exception.CommandException;
 import lt.ehu.student.moneytrackerbeta.exception.ServiceException;
@@ -42,7 +43,7 @@ public class ViewTransactionsCommand implements Command {
             logger.error("Error while retrieving transactions", e);
             throw new CommandException("Error while retrieving transactions", e);
         }
-        return "pages/view_transactions.jsp";
+        return PagePath.VIEW_TRANSACTIONS;
     }
 
     @Override

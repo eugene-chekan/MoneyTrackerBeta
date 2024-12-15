@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public class SubmitTransactionCommand implements Command {
-    private static final Logger logger = LogManager.getLogger(SubmitTransactionCommand.class);
+    private static final Logger logger = LogManager.getLogger(SubmitTransactionCommand.class.getName());
 
     @Override
     public String execute(HttpServletRequest request) throws CommandException {

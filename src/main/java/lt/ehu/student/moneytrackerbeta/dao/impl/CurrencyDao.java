@@ -1,6 +1,7 @@
 package lt.ehu.student.moneytrackerbeta.dao.impl;
 
 import lt.ehu.student.moneytrackerbeta.connection.ConnectionPool;
+import lt.ehu.student.moneytrackerbeta.constant.DatabaseColumnName;
 import lt.ehu.student.moneytrackerbeta.dao.BaseDao;
 import lt.ehu.student.moneytrackerbeta.exception.DaoException;
 import lt.ehu.student.moneytrackerbeta.model.Currency;
@@ -16,9 +17,9 @@ import java.util.List;
 import java.util.UUID;
 
 public class CurrencyDao implements BaseDao<Currency> {
-    private static final Logger logger = LogManager.getLogger(CurrencyDao.class);
-    private static final String SELECT_ALL_CURRENCIES = "SELECT id, code, symbol, name FROM public.currency ORDER BY code";
-    private static final String SELECT_CURRENCY_BY_ID = "SELECT id, code, symbol, name FROM public.currency WHERE id = ?";
+    private static final Logger logger = LogManager.getLogger(CurrencyDao.class.getName());
+    private static final String SELECT_ALL_CURRENCIES = "SELECT " + DatabaseColumnName.CURRENCY_ID + ", " + DatabaseColumnName.CURRENCY_ISO_CODE + ", " + DatabaseColumnName.CURRENCY_SYMBOL + ", " + DatabaseColumnName.CURRENCY_NAME + " FROM public.currency ORDER BY " + DatabaseColumnName.CURRENCY_ISO_CODE;
+    private static final String SELECT_CURRENCY_BY_ID = "SELECT " + DatabaseColumnName.CURRENCY_ID + ", " + DatabaseColumnName.CURRENCY_ISO_CODE + ", " + DatabaseColumnName.CURRENCY_SYMBOL + ", " + DatabaseColumnName.CURRENCY_NAME + " FROM public.currency WHERE " + DatabaseColumnName.CURRENCY_ID + " = ?";
 
     @Override
     public List<Currency> findAll() throws DaoException {
@@ -30,10 +31,10 @@ public class CurrencyDao implements BaseDao<Currency> {
             ResultSet resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 currencies.add(new Currency(
-                    resultSet.getInt("id"),
-                    resultSet.getString("code"),
-                    resultSet.getString("symbol"),
-                    resultSet.getString("name")
+                    resultSet.getInt(DatabaseColumnName.CURRENCY_ID),
+                    resultSet.getString(DatabaseColumnName.CURRENCY_ISO_CODE),
+                    resultSet.getString(DatabaseColumnName.CURRENCY_SYMBOL),
+                    resultSet.getString(DatabaseColumnName.CURRENCY_NAME)
                 ));
             }
             return currencies;
@@ -57,10 +58,10 @@ public class CurrencyDao implements BaseDao<Currency> {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 return new Currency(
-                    resultSet.getInt("id"),
-                    resultSet.getString("code"),
-                    resultSet.getString("symbol"),
-                    resultSet.getString("name")
+                    resultSet.getInt(DatabaseColumnName.CURRENCY_ID),
+                    resultSet.getString(DatabaseColumnName.CURRENCY_ISO_CODE),
+                    resultSet.getString(DatabaseColumnName.CURRENCY_SYMBOL),
+                    resultSet.getString(DatabaseColumnName.CURRENCY_NAME)
                 );
             }
             return null;

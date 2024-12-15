@@ -1,5 +1,13 @@
 package lt.ehu.student.moneytrackerbeta.service.impl;
 
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.UUID;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import lt.ehu.student.moneytrackerbeta.dao.impl.AssetDao;
 import lt.ehu.student.moneytrackerbeta.dao.impl.TransactionDao;
 import lt.ehu.student.moneytrackerbeta.exception.DaoException;
@@ -8,19 +16,13 @@ import lt.ehu.student.moneytrackerbeta.model.Asset;
 import lt.ehu.student.moneytrackerbeta.model.Transaction;
 import lt.ehu.student.moneytrackerbeta.model.dto.TransactionDto;
 import lt.ehu.student.moneytrackerbeta.service.TransactionService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.util.List;
-import java.util.UUID;
 
 public class TransactionServiceImpl implements TransactionService {
-    private static final Logger logger = LogManager.getLogger(TransactionServiceImpl.class);
+    private static final Logger logger = LogManager.getLogger(TransactionServiceImpl.class.getName());
 
     @Override
-    public boolean addTransaction(int userId, int type, String source, String destination, Timestamp date, BigDecimal amount, String comment) throws ServiceException {
+    public boolean addTransaction(int userId, int type, String source, String destination, Timestamp date,
+            BigDecimal amount, String comment) throws ServiceException {
         AssetDao assetDao = new AssetDao();
         TransactionDao transactionDao = new TransactionDao();
         Transaction transaction = new Transaction();
@@ -37,7 +39,7 @@ public class TransactionServiceImpl implements TransactionService {
             transaction.setComment(comment);
             return transactionDao.create(transaction);
         } catch (DaoException e) {
-            logger.debug("Error while adding transaction to the database", e);
+            logger.error("Error while adding transaction to the database", e);
             throw new ServiceException("Error while adding transaction to the database", e);
         }
     }
@@ -53,7 +55,8 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<TransactionDto> findFilteredTransactions(int userId, int type, Timestamp fromDate, Timestamp toDate) throws ServiceException {
+    public List<TransactionDto> findFilteredTransactions(int userId, int type, Timestamp fromDate, Timestamp toDate)
+            throws ServiceException {
         TransactionDao transactionDao = new TransactionDao();
         Transaction transaction = new Transaction();
         transaction.setUserId(userId);
@@ -63,7 +66,7 @@ public class TransactionServiceImpl implements TransactionService {
         try {
             return transactionDao.findFilteredTransactions(userId, type, fromDate, toDate);
         } catch (DaoException e) {
-            logger.debug("Error while retrieving filtered transactions from the database", e);
+            logger.error("Error while retrieving filtered transactions from the database", e);
             throw new ServiceException("Error while retrieving filtered transactions from the database", e);
         }
     }

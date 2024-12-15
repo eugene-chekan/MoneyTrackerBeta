@@ -1,6 +1,7 @@
 package lt.ehu.student.moneytrackerbeta.dao.impl;
 
 import lt.ehu.student.moneytrackerbeta.connection.ConnectionPool;
+import lt.ehu.student.moneytrackerbeta.constant.DatabaseColumnName;
 import lt.ehu.student.moneytrackerbeta.dao.BaseDao;
 import lt.ehu.student.moneytrackerbeta.exception.DaoException;
 import lt.ehu.student.moneytrackerbeta.model.User;
@@ -13,11 +14,11 @@ import java.util.List;
 import java.util.UUID;
 
 public class UserDao implements BaseDao<User> {
-    private static final Logger logger = LogManager.getLogger(UserDao.class);
+    private static final Logger logger = LogManager.getLogger(UserDao.class.getName());
 
-    private static final String SELECT_ALL_USERS = "SELECT id, login, password_hash, first_name, last_name, default_currency, email, registration_date FROM public.user";
-    private static final String SELECT_USER_BY_LOGIN = "SELECT id, login, password_hash, first_name, last_name, default_currency, email, registration_date FROM public.user WHERE login = ?";
-    private static final String INSERT_USER = "INSERT INTO public.user (login, password_hash, first_name, last_name, default_currency, email, registration_date) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    private static final String SELECT_ALL_USERS = "SELECT " + DatabaseColumnName.USER_ID + ", " + DatabaseColumnName.USER_LOGIN + ", " + DatabaseColumnName.USER_PASSWORD_HASH + ", " + DatabaseColumnName.USER_FIRST_NAME + ", " + DatabaseColumnName.USER_LAST_NAME + ", " + DatabaseColumnName.USER_DEFAULT_CURRENCY + ", " + DatabaseColumnName.USER_EMAIL + ", " + DatabaseColumnName.USER_REGISTRATION_DATE + " FROM public.user";
+    private static final String SELECT_USER_BY_LOGIN = "SELECT " + DatabaseColumnName.USER_ID + ", " + DatabaseColumnName.USER_LOGIN + ", " + DatabaseColumnName.USER_PASSWORD_HASH + ", " + DatabaseColumnName.USER_FIRST_NAME + ", " + DatabaseColumnName.USER_LAST_NAME + ", " + DatabaseColumnName.USER_DEFAULT_CURRENCY + ", " + DatabaseColumnName.USER_EMAIL + ", " + DatabaseColumnName.USER_REGISTRATION_DATE + " FROM public.user WHERE " + DatabaseColumnName.USER_LOGIN + " = ?";
+    private static final String INSERT_USER = "INSERT INTO public.user (" + DatabaseColumnName.USER_LOGIN + ", " + DatabaseColumnName.USER_PASSWORD_HASH + ", " + DatabaseColumnName.USER_FIRST_NAME + ", " + DatabaseColumnName.USER_LAST_NAME + ", " + DatabaseColumnName.USER_DEFAULT_CURRENCY + ", " + DatabaseColumnName.USER_EMAIL + ", " + DatabaseColumnName.USER_REGISTRATION_DATE + ") VALUES (?, ?, ?, ?, ?, ?, ?)";
 
     public List<User> findAll() throws DaoException {
         List<User> users = new ArrayList<>();
@@ -28,14 +29,14 @@ public class UserDao implements BaseDao<User> {
             statement = connection.prepareStatement(SELECT_ALL_USERS);
             ResultSet resultSet = statement.executeQuery(SELECT_ALL_USERS);
             while (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                String login = resultSet.getString("login");
-                String passwordHash = resultSet.getString("password_hash");
-                String firstName = resultSet.getString("first_name");
-                String lastName = resultSet.getString("last_name");
-                int defaultCurrency = Integer.parseInt(resultSet.getString("default_currency"));
-                String email = resultSet.getString("email");
-                Timestamp registrationDate = resultSet.getTimestamp("registration_date");
+                int id = resultSet.getInt(DatabaseColumnName.USER_ID);
+                String login = resultSet.getString(DatabaseColumnName.USER_LOGIN);
+                String passwordHash = resultSet.getString(DatabaseColumnName.USER_PASSWORD_HASH);
+                String firstName = resultSet.getString(DatabaseColumnName.USER_FIRST_NAME);
+                String lastName = resultSet.getString(DatabaseColumnName.USER_LAST_NAME);
+                int defaultCurrency = Integer.parseInt(resultSet.getString(DatabaseColumnName.USER_DEFAULT_CURRENCY));
+                String email = resultSet.getString(DatabaseColumnName.USER_EMAIL);
+                Timestamp registrationDate = resultSet.getTimestamp(DatabaseColumnName.USER_REGISTRATION_DATE);
                 // Create User objects and add them to the list
                 User user = new User(id, login, passwordHash, firstName, lastName, defaultCurrency, email, registrationDate);
                 users.add(user);
@@ -70,13 +71,13 @@ public class UserDao implements BaseDao<User> {
             statement.setString(1, login);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                String passwordHash = resultSet.getString("password_hash");
-                String firstName = resultSet.getString("first_name");
-                String lastName = resultSet.getString("last_name");
-                int defaultCurrency = Integer.parseInt(resultSet.getString("default_currency"));
-                String email = resultSet.getString("email");
-                Timestamp registrationDate = resultSet.getTimestamp("registration_date");
+                int id = resultSet.getInt(DatabaseColumnName.USER_ID);
+                String passwordHash = resultSet.getString(DatabaseColumnName.USER_PASSWORD_HASH);
+                String firstName = resultSet.getString(DatabaseColumnName.USER_FIRST_NAME);
+                String lastName = resultSet.getString(DatabaseColumnName.USER_LAST_NAME);
+                int defaultCurrency = Integer.parseInt(resultSet.getString(DatabaseColumnName.USER_DEFAULT_CURRENCY));
+                String email = resultSet.getString(DatabaseColumnName.USER_EMAIL);
+                Timestamp registrationDate = resultSet.getTimestamp(DatabaseColumnName.USER_REGISTRATION_DATE);
                 // Create User objects and add them to the list
                 return new User(id, login, passwordHash, firstName, lastName, defaultCurrency, email, registrationDate);
             }

@@ -2,6 +2,7 @@ package lt.ehu.student.moneytrackerbeta.controller.command.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import lt.ehu.student.moneytrackerbeta.constant.PagePath;
 import lt.ehu.student.moneytrackerbeta.controller.command.Command;
 import lt.ehu.student.moneytrackerbeta.model.Asset;
 import lt.ehu.student.moneytrackerbeta.model.User;
@@ -26,7 +27,7 @@ public class DashboardCommand implements Command {
         boolean isLoggedIn = (boolean)session.getAttribute("isLoggedIn");
         logger.debug("Is user logged in: {}", isLoggedIn);
         if  (!isLoggedIn) {
-            return "pages/login.jsp";
+            return PagePath.LOGIN;
         }
         List<Asset> accounts = (List<Asset>) request.getSession().getAttribute("accounts");
         List<Asset> incomes = (List<Asset>) request.getSession().getAttribute("incomeSources");
@@ -47,7 +48,7 @@ public class DashboardCommand implements Command {
         request.setAttribute("expense", expense);
         request.setAttribute("balance", income.subtract(expense));
 
-        return "pages/dashboard.jsp";
+        return PagePath.DASHBOARD;
     }
 }
 
