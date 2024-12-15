@@ -6,13 +6,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class LogoutCommand implements Command {
-    private static final Logger logger = LogManager.getLogger(LogoutCommand.class);
+    private static final Logger logger = LogManager.getLogger(LogoutCommand.class.getName());
 
     @Override
     public String execute(HttpServletRequest request) {
-        logger.debug("Request context path: {}", request.getContextPath());
-        logger.debug("Request URI: {}", request.getRequestURI());
-        logger.debug("Request params: {}", request.getParameterMap());
+        logger.info("Logout command executed");
         request.getSession().invalidate();
         return "index.jsp";
     }

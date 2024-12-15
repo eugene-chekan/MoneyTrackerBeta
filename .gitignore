@@ -26,5 +26,5 @@ replay_pid*
 /.vscode/
 /logs/
 /target/
-src/main/resources/db/db.properties
+src/main/resources/database.properties
 *.backup

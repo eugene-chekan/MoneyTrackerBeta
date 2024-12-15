@@ -1,118 +1,110 @@
 package lt.ehu.student.moneytrackerbeta.connection;
 
+import lt.ehu.student.moneytrackerbeta.exception.ConnectionPoolException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
+import java.util.ResourceBundle;
 
 public class ConnectionPool {
-    private static final Lock  lock = new ReentrantLock();
-    private static final Logger logger = LogManager.getLogger(ConnectionPool.class);
-    private static final int CONNECTION_POOL_CAPACITY = 2;
-    private static ConnectionPool instance;
-    private final BlockingQueue<Connection> freeConnections = new LinkedBlockingQueue<>(CONNECTION_POOL_CAPACITY);
-    private final BlockingQueue<Connection> usedConnections = new LinkedBlockingQueue<>(CONNECTION_POOL_CAPACITY);
+    private static final Logger logger = LogManager.getLogger(ConnectionPool.class.getName());
+    private static final String DB_PROPERTY_FILE = "database";
+    private static final String DB_URL = "db.url";
+    private static final String DB_USER = "db.user";
+    private static final String DB_PASSWORD = "db.password";
+    private static final String DB_POOL_SIZE = "db.poolsize";
+    
+    private BlockingQueue<Connection> availableConnections;
+    private BlockingQueue<Connection> usedConnections;
+    private String url;
+    private String user;
+    private String password;
+    private int poolSize;
 
     static {
         try {
-            DriverManager.registerDriver(new org.postgresql.Driver());
-        } catch (SQLException e) {
-            logger.fatal("Failed to register driver.", e);
-            throw new ExceptionInInitializerError("Failed to register database driver.");
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new ConnectionPoolException("PostgreSQL JDBC Driver not found", e);
         }
     }
 
     private ConnectionPool() {
-        Properties props = new Properties();
-        try (InputStream input = getClass().getClassLoader().getResourceAsStream("db/db.properties")) {
-            props.load(input);
-        } catch (IOException e) {
-            logger.fatal("Failed to load properties.", e);
-            throw new ExceptionInInitializerError("Failed to load properties.");
-        }
-        final String URL = constructUrl(props);
-        Connection connection = null;
-        for (int i = 0; i < CONNECTION_POOL_CAPACITY; i++) {
-            try {
-                connection = DriverManager.getConnection(URL, props);
-                logger.debug("Connection #{} created.", i);
-            } catch (SQLException e) {
-                logger.fatal("Failed to create connection.", e);
-            }
-            if (connection == null) {
-                logger.error("Failed to add connection to the pool.");
-            } else {
-                freeConnections.add(connection);
-                logger.debug("Connection #{} added to the pool.", i);
-            }
-        }
+        ResourceBundle bundle = ResourceBundle.getBundle(DB_PROPERTY_FILE);
+        this.url = bundle.getString(DB_URL);
+        this.user = bundle.getString(DB_USER);
+        this.password = bundle.getString(DB_PASSWORD);
+        this.poolSize = Integer.parseInt(bundle.getString(DB_POOL_SIZE));
+    }
+
+    private static class ConnectionPoolHolder {
+        private static final ConnectionPool instance = new ConnectionPool(); // Use JVM's class initialization guarantees for thread safety
     }
 
     public static ConnectionPool getInstance() {
-        if (instance == null) {
-            lock.lock();
-            try {
-                if (instance == null) {
-                    instance = new ConnectionPool();
-                    logger.debug("Connection pool created.");
-                }
-            } finally {
-                lock.unlock();
-            }
-        }
-        logger.debug("Existing connection pool returned.");
-        return instance;
+        return ConnectionPoolHolder.instance;
     }
 
-    public Connection getConnection() {
-        Connection connection = null;
+    public void initializePool() {
+        logger.info("Initializing connection pool");
         try {
-            connection = freeConnections.take();
-            logger.debug(
-                    "Connection taken from the pool. Available connections: {}",
-                    (CONNECTION_POOL_CAPACITY - freeConnections.remainingCapacity())
-            );
-            usedConnections.put(connection);
-            logger.debug("Connection put to the used connections queue.");
-        } catch (InterruptedException e) {
-            logger.error("Failed to get connection from the pool.", e);
-            Thread.currentThread().interrupt();
+            availableConnections = new LinkedBlockingQueue<>(poolSize);
+            usedConnections = new LinkedBlockingQueue<>(poolSize);
+            
+            for (int i = 0; i < poolSize; i++) {
+                Connection connection = createConnection();
+                availableConnections.offer(connection);
+            }
+        } catch (SQLException e) {
+            logger.error("Error initializing connection pool", e);
+            throw new ConnectionPoolException("Failed to initialize connection pool", e);
         }
-        return connection;
+        logger.info("Connection pool initialized with {} connections", poolSize);
+    }
+
+    private Connection createConnection() throws SQLException {
+        return DriverManager.getConnection(url, user, password);
+    }
+
+    public Connection getConnection() throws ConnectionPoolException {
+        try {
+            Connection connection = availableConnections.take();
+            usedConnections.offer(connection);
+            return connection;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new ConnectionPoolException("Error getting connection from pool", e);
+        }
     }
 
     public void releaseConnection(Connection connection) {
-        try {
-            if (!usedConnections.remove(connection)) {
-                logger.warn("Connection not found in the used connections queue.");
-            }
-            logger.debug("Connection removed from the used connections queue.");
-            freeConnections.put(connection);
-            logger.debug(
-                    "Connection put back to the pool. Available connections: {}",
-                    (CONNECTION_POOL_CAPACITY - freeConnections.remainingCapacity())
-            );
-        } catch (InterruptedException e) {
-            logger.error("Failed to release connection to the pool.", e);
+        if (connection != null && usedConnections.remove(connection)) {
+            availableConnections.offer(connection);
         }
     }
 
-    private static String constructUrl(Properties props) {
-        String driver = props.getProperty("driver");
-        String type = props.getProperty("type");
-        String host = props.getProperty("host");
-        String port = props.getProperty("port");
-        String database = props.getProperty("name");
-        return driver + ":" + type + "://" + host + ":" + port + "/" + database;
+    public void closePool() {
+        logger.info("Closing connection pool");
+        closeConnections(usedConnections);
+        closeConnections(availableConnections);
+        logger.info("Connection pool closed");
+    }
+
+    private void closeConnections(BlockingQueue<Connection> connections) {
+        Connection connection;
+        while ((connection = connections.poll()) != null) {
+            try {
+                if (!connection.isClosed()) {
+                    connection.close();
+                }
+            } catch (SQLException e) {
+                logger.error("Error closing connection", e);
+            }
+        }
     }
 }

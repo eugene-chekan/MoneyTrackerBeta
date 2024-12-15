@@ -15,7 +15,7 @@ import java.io.IOException;
 
 @WebServlet(name = "helloServlet", value = "/controller")
 public class Controller extends HttpServlet {
-    private static final Logger logger = LogManager.getLogger(Controller.class);
+    private static final Logger logger = LogManager.getLogger(Controller.class.getName());
 
     public void init() {
         logger.debug("Servlet initialized successfully.");
@@ -26,9 +26,9 @@ public class Controller extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (ServletException | IOException e) {
+            logger.error("Error processing GET request", e);
             throw new RuntimeException(e);
         }
-        logger.debug("Processed GET request.");
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {

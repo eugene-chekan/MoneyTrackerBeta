@@ -19,20 +19,26 @@ public class ApplicationInitListener implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
+        // Wait for connection pool to be initialized
+        if (sce.getServletContext().getAttribute("connectionPoolInitialized") == null) {
+            logger.error("Connection pool not initialized");
+            throw new IllegalStateException("Connection pool must be initialized before application initialization");
+        }
+
         try {
-            // Load currencies
             CurrencyDao currencyDao = new CurrencyDao();
-            List<Currency> currencies = currencyDao.findAll();
-            sce.getServletContext().setAttribute("availableCurrencies", currencies);
-
-            // Load transaction types
             TransactionTypeDao transactionTypeDao = new TransactionTypeDao();
+            
+            List<Currency> currencies = currencyDao.findAll();
             List<TransactionType> types = transactionTypeDao.findDisplayable();
+            
+            sce.getServletContext().setAttribute("availableCurrencies", currencies);
             sce.getServletContext().setAttribute("availableTransactionTypes", types);
-
+            
             logger.info("Application data initialized successfully");
         } catch (DaoException e) {
             logger.error("Error initializing application data", e);
+            throw new RuntimeException("Error initializing application data", e);
         }
     }
 } 

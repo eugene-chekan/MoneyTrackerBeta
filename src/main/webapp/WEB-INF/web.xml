@@ -13,6 +13,12 @@
     <listener>
         <listener-class>org.apache.logging.log4j.web.Log4jServletContextListener</listener-class>
     </listener>
+    <listener>
+        <listener-class>lt.ehu.student.moneytrackerbeta.listener.ConnectionPoolListener</listener-class>
+    </listener>
+    <listener>
+        <listener-class>lt.ehu.student.moneytrackerbeta.listener.ApplicationInitListener</listener-class>
+    </listener>
     <error-page>
         <error-code>404</error-code>
         <location>/pages/errors/404.jsp</location>
