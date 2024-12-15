@@ -22,7 +22,7 @@
             <!-- Currency Dropdown -->
             <label for="default_curr">Choose your currency:</label>
             <select name="default_curr" id="default_curr" required>
-                <c:forEach var="currency" items="${currencies}">
+                <c:forEach var="currency" items="${applicationScope.availableCurrencies}">
                     <option value="${currency.id}">
                         ${currency.symbol} - ${currency.name}
                     </option>

@@ -13,26 +13,28 @@ import java.sql.Timestamp;
 import java.util.List;
 
 public class NewTransactionCommand implements Command {
-    private static final Logger logger = LogManager.getLogger(NewTransactionCommand.class);
+    private static final Logger logger = LogManager.getLogger(NewTransactionCommand.class.getName());
 
     @SuppressWarnings("unchecked")
     @Override
     public String execute(HttpServletRequest request) throws CommandException {
         HttpSession session = request.getSession();
         String firstName = (String) session.getAttribute("firstName");
+        boolean isLoggedIn = (boolean) session.getAttribute("isLoggedIn");
         List<Asset> accounts = (List<Asset>) session.getAttribute("accounts");
         List<Asset> incomes = (List<Asset>) session.getAttribute("incomeSources");
         List<Asset> expenses = (List<Asset>) session.getAttribute("expenseSources");
-        TransactionType[] types = TransactionType.getDisplayableTypes();
-        boolean isLoggedIn = (boolean) session.getAttribute("isLoggedIn");
+        List<TransactionType> types = (List<TransactionType>) session.getAttribute("transactionTypes");
         if (!isLoggedIn) {
+            logger.warn("User is not logged in");
+            request.setAttribute("errorMessage", "You must be logged in to add a transaction.");
             return "pages/login.jsp";
         }
         return NewTransactionCommand.prepareTransactionForm(request, firstName, accounts, incomes, expenses, types);
 
     }
 
-    public static String prepareTransactionForm(HttpServletRequest request, String firstName, List<Asset> accounts, List<Asset> incomes, List<Asset> expenses, TransactionType[] types) {
+    public static String prepareTransactionForm(HttpServletRequest request, String firstName, List<Asset> accounts, List<Asset> incomes, List<Asset> expenses, List<TransactionType> types) {
         request.setAttribute("accounts", accounts);
         request.setAttribute("incomeSources", incomes);
         request.setAttribute("expenseSources", expenses);

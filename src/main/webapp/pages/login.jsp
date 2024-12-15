@@ -83,7 +83,7 @@
         </div>
     </form>
     <div class="signup-link">
-        <p>Don't have an account? <a href="${pageContext.request.contextPath}/controller?command=show_signup">Sign Up</a></p>
+        <p>Don't have an account? <a href="${pageContext.request.contextPath}/pages/signup.jsp">Sign Up</a></p>
     </div>
 </div>
 </body>

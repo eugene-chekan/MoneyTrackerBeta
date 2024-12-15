@@ -32,7 +32,7 @@
                 <label for="type">Transaction Type:</label>
                 <select id="type" name="type">
                     <option value="0">All Types</option>
-                    <c:forEach items="${sessionScope.transactionTypes}" var="type">
+                    <c:forEach items="${applicationScope.availableTransactionTypes}" var="type">
                         <option value="${type.id}" ${param.type eq type.id ? 'selected' : ''}>${type.name}</option>
                     </c:forEach>
                 </select>

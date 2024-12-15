@@ -18,7 +18,7 @@
 
             <label for="type">Transaction Type:</label>
             <select name="type" id="type" required>
-                <c:forEach items="${transactionTypes}" var="transactionType">
+                <c:forEach items="${applicationScope.availableTransactionTypes}" var="transactionType">
                     <option value="${transactionType.id}">${transactionType.name}</option>
                 </c:forEach>
             </select>
@@ -49,7 +49,7 @@
     <script>
         const transactionConfig = {
             types: {
-                <c:forEach items="${transactionTypes}" var="type" varStatus="status">
+                <c:forEach items="${applicationScope.availableTransactionTypes}" var="type" varStatus="status">
                     "${type.name}": {
                         id: "${type.id}",
                         name: "${type.name}"
@@ -70,17 +70,17 @@
             selectElement.required = true;
 
             // Add options based on selected type
-            if (selectedType === transactionConfig.types.INCOME.id) {
+            if (selectedType === transactionConfig.types.Income.id) {
                 <c:forEach items="${incomeSources}" var="account">
                 let option = new Option("${account.name}", "${account.id}");
                 selectElement.add(option);
                 </c:forEach>
-            } else if (selectedType === transactionConfig.types.EXPENSE.id) {
+            } else if (selectedType === transactionConfig.types.Expense.id) {
                 <c:forEach items="${accounts}" var="account">
                 let option = new Option("${account.name}", "${account.id}");
                 selectElement.add(option);
                 </c:forEach>
-            } else if (selectedType === transactionConfig.types.TRANSFER.id) {
+            } else if (selectedType === transactionConfig.types.Transfer.id) {
                 <c:forEach items="${accounts}" var="account">
                 let option = new Option("${account.name}", "${account.id}");
                 selectElement.add(option);
@@ -103,17 +103,17 @@
             selectElement.required = true;
 
             // Add options based on selected type
-            if (selectedType === transactionConfig.types.INCOME.id) {
+            if (selectedType === transactionConfig.types.Income.id) {
                 <c:forEach items="${accounts}" var="account">
                 let option = new Option("${account.name}", "${account.id}");
                 selectElement.add(option);
                 </c:forEach>
-            } else if (selectedType === transactionConfig.types.EXPENSE.id) {
+            } else if (selectedType === transactionConfig.types.Expense.id) {
                 <c:forEach items="${expenseSources}" var="account">
                 let option = new Option("${account.name}", "${account.id}");
                 selectElement.add(option);
                 </c:forEach>
-            } else if (selectedType === transactionConfig.types.TRANSFER.id) {
+            } else if (selectedType === transactionConfig.types.Transfer.id) {
                 <c:forEach items="${accounts}" var="account">
                 let option = new Option("${account.name}", "${account.id}");
                 selectElement.add(option);

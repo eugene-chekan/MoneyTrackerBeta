@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.List;
 
 public class ShowSignUpPageCommand implements Command {
-    private static final Logger logger = LogManager.getLogger(ShowSignUpPageCommand.class);
+    private static final Logger logger = LogManager.getLogger(ShowSignUpPageCommand.class.getName());
 
     @Override
     public String execute(HttpServletRequest request) throws CommandException {

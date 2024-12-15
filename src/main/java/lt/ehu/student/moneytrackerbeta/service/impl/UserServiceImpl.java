@@ -1,6 +1,7 @@
 package lt.ehu.student.moneytrackerbeta.service.impl;
 
 import lt.ehu.student.moneytrackerbeta.dao.impl.AssetDao;
+import lt.ehu.student.moneytrackerbeta.dao.impl.TransactionTypeDao;
 import lt.ehu.student.moneytrackerbeta.dao.impl.UserDao;
 import lt.ehu.student.moneytrackerbeta.exception.DaoException;
 import lt.ehu.student.moneytrackerbeta.exception.ServiceException;
@@ -14,7 +15,12 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class UserServiceImpl implements UserService {
+    private static final Logger logger = LogManager.getLogger(UserServiceImpl.class.getName());
+    
     @Override
     public boolean verifyLogin(String username, String password) throws ServiceException {
         UserDao userDao = new UserDao();
@@ -35,6 +41,7 @@ public class UserServiceImpl implements UserService {
     public boolean registerUser(String username, String password, String firstName, String lastName, int defaultCurrency, String email) throws ServiceException {
         User user = new User();
         if (isUsernameTaken(username)) {
+            logger.error("Username already taken: %s", username);
             return false;
         }
         // Hash the password before storing it in the database
@@ -47,13 +54,17 @@ public class UserServiceImpl implements UserService {
         user.setEmail(email);
         user.setRegistrationDate(new Timestamp(System.currentTimeMillis()));
         UserDao userDao = new UserDao();
+        TransactionTypeDao transactionTypeDao = new TransactionTypeDao();
         try {
             boolean userCreated = userDao.create(user);
             user = userDao.findByLogin(username);
             // Create default assets for the user
-            createDefaultAssets(user);
+            List<TransactionType> types = transactionTypeDao.findAll();
+            createDefaultAssets(user, types);
+            logger.info("User created successfully: %s", username);
             return userCreated;
         } catch (DaoException e) {
+            logger.error("Error while registering user: %s", username);
             throw new ServiceException("Error while registering user", e);
         }
     }
@@ -117,7 +128,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    private void createDefaultAssets(User user) throws ServiceException {
+    private void createDefaultAssets(User user, List<TransactionType> types) throws ServiceException {
         AssetDao assetDao = new AssetDao();
         Asset defaultAccount = new Asset();
         Asset defaultExpense = new Asset();
@@ -126,17 +137,17 @@ public class UserServiceImpl implements UserService {
         defaultAccount.setUserId(user.getId());
         defaultAccount.setName("Cash (default)");
         defaultAccount.setCurrencyId(user.getDefaultCurrency());
-        defaultAccount.setTypeId(TransactionType.ACCOUNT.getId());
+        defaultAccount.setTypeId(types.stream().filter(type -> type.getName().equals(TransactionType.ACCOUNT)).findFirst().orElse(null).getId());
 
         defaultIncome.setUserId(user.getId());
         defaultIncome.setName("Salary (default)");
         defaultIncome.setCurrencyId(user.getDefaultCurrency());
-        defaultIncome.setTypeId(TransactionType.INCOME.getId());
+        defaultIncome.setTypeId(types.stream().filter(type -> type.getName().equals(TransactionType.INCOME)).findFirst().orElse(null).getId());
 
         defaultExpense.setUserId(user.getId());
         defaultExpense.setName("Groceries (default)");
         defaultExpense.setCurrencyId(user.getDefaultCurrency());
-        defaultExpense.setTypeId(TransactionType.EXPENSE.getId());
+        defaultExpense.setTypeId(types.stream().filter(type -> type.getName().equals(TransactionType.EXPENSE)).findFirst().orElse(null).getId());
         try {
             assetDao.create(defaultAccount);
             assetDao.create(defaultIncome);

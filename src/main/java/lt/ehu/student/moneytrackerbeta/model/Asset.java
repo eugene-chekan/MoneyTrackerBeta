@@ -65,13 +65,4 @@ public class Asset extends AbstractModel {
     public void setTypeId(int typeId) {
         this.typeId = typeId;
     }
-    public boolean isAccount() {
-        return typeId == TransactionType.ACCOUNT.getId();
-    }
-    public boolean isIncome() {
-        return typeId == TransactionType.INCOME.getId();
-    }
-    public boolean isExpense() {
-        return typeId == TransactionType.EXPENSE.getId();
-    }
 }

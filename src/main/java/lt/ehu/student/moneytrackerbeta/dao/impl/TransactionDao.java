@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class TransactionDao implements BaseDao<Transaction> {
-    private static final Logger logger = LogManager.getLogger(TransactionDao.class);
+    private static final Logger logger = LogManager.getLogger(TransactionDao.class.getName());
     private static final String SELECT_TRANSACTION_TYPE_BY_NAME = "SELECT id, name, description FROM public.transaction_type WHERE name = ?";
     private static final String INSERT_TRANSACTION = "INSERT INTO transaction (id, user_id, type, timestamp, source, destination, amount, currency_id, comment) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String SELECT_FILTERED_TRANSACTIONS = """

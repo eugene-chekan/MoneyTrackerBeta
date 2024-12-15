@@ -3,7 +3,7 @@
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <jsp:useBean id="now" class="java.util.Date"/>
 <c:set var="userCurrencyId" value="${sessionScope.user.defaultCurrency}"/>
-<c:forEach items="${sessionScope.currencies}" var="currency">
+<c:forEach items="${applicationScope.availableCurrencies}" var="currency">
     <c:if test="${currency.id == userCurrencyId}">
         <c:set var="userCurrencySymbol" value="${currency.symbol}" />
     </c:if>
