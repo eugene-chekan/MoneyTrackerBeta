@@ -3,6 +3,7 @@ package lt.ehu.student.moneytrackerbeta.dao.impl;
 import lt.ehu.student.moneytrackerbeta.connection.ConnectionPool;
 import lt.ehu.student.moneytrackerbeta.constant.DatabaseColumnName;
 import lt.ehu.student.moneytrackerbeta.dao.BaseDao;
+import lt.ehu.student.moneytrackerbeta.exception.ConnectionPoolException;
 import lt.ehu.student.moneytrackerbeta.exception.DaoException;
 import lt.ehu.student.moneytrackerbeta.model.User;
 import org.apache.logging.log4j.LogManager;
@@ -44,6 +45,9 @@ public class UserDao implements BaseDao<User> {
         } catch (SQLException e) {
             logger.error("Error while retrieving users from the database", e);
             throw new DaoException("Error while retrieving users from the database", e);
+        } catch (ConnectionPoolException e) {
+            logger.fatal("Error while retrieving users from the database", e);
+            throw new RuntimeException("Error while retrieving users from the database", e);
         } finally {
             if (connection != null) {
                 ConnectionPool.getInstance().releaseConnection(connection);
@@ -84,6 +88,9 @@ public class UserDao implements BaseDao<User> {
         } catch (SQLException e) {
             logger.error("Error while retrieving a user by login from the database", e);
             throw new DaoException("Error while retrieving a user by login from the database", e);
+        } catch (ConnectionPoolException e) {
+            logger.fatal("Error while retrieving a user by login from the database", e);
+            throw new RuntimeException("Error while retrieving a user by login from the database", e);
         } finally {
             if (connection != null) {
                 ConnectionPool.getInstance().releaseConnection(connection);
@@ -113,6 +120,9 @@ public class UserDao implements BaseDao<User> {
         } catch (SQLException e) {
             logger.error("Error while adding a user to the database", e);
             throw new DaoException("Error while adding a user to the database", e);
+        } catch (ConnectionPoolException e) {
+            logger.fatal("Error while adding a user to the database", e);
+            throw new RuntimeException("Error while adding a user to the database", e);
         } finally {
             if (connection != null) {
                 ConnectionPool.getInstance().releaseConnection(connection);

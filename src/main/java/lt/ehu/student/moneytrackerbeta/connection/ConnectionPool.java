@@ -30,7 +30,8 @@ public class ConnectionPool {
         try {
             Class.forName("org.postgresql.Driver");
         } catch (ClassNotFoundException e) {
-            throw new ConnectionPoolException("PostgreSQL JDBC Driver not found", e);
+            logger.fatal("PostgreSQL JDBC Driver not found", e);
+            throw new RuntimeException("PostgreSQL JDBC Driver not found", e);
         }
     }
 
@@ -50,7 +51,7 @@ public class ConnectionPool {
         return ConnectionPoolHolder.instance;
     }
 
-    public void initializePool() {
+    public void initializePool() throws ConnectionPoolException {
         logger.info("Initializing connection pool");
         try {
             availableConnections = new LinkedBlockingQueue<>(poolSize);

@@ -3,6 +3,7 @@ package lt.ehu.student.moneytrackerbeta.dao.impl;
 import lt.ehu.student.moneytrackerbeta.connection.ConnectionPool;
 import lt.ehu.student.moneytrackerbeta.constant.DatabaseColumnName;
 import lt.ehu.student.moneytrackerbeta.dao.BaseDao;
+import lt.ehu.student.moneytrackerbeta.exception.ConnectionPoolException;
 import lt.ehu.student.moneytrackerbeta.exception.DaoException;
 import lt.ehu.student.moneytrackerbeta.model.Transaction;
 import lt.ehu.student.moneytrackerbeta.model.dto.TransactionDto;
@@ -61,6 +62,9 @@ public class TransactionDao implements BaseDao<Transaction> {
         } catch (SQLException e) {
             logger.error("Error while creating transaction in the database", e);
             throw new DaoException("Error while creating transaction in the database", e);
+        } catch (ConnectionPoolException e) {
+            logger.fatal("Error while creating transaction in the database", e);
+            throw new RuntimeException("Error while creating transaction in the database", e);
         } finally {
             if (connection != null) {
                 ConnectionPool.getInstance().releaseConnection(connection);
@@ -134,6 +138,9 @@ public class TransactionDao implements BaseDao<Transaction> {
         } catch (SQLException e) {
             logger.error("Error while retrieving filtered transactions from the database", e);
             throw new DaoException("Error while retrieving filtered transactions from the database", e);
+        } catch (ConnectionPoolException e) {
+            logger.fatal("Error while retrieving filtered transactions from the database", e);
+            throw new RuntimeException("Error while retrieving filtered transactions from the database", e);
         } finally {
             if (connection != null) {
                 ConnectionPool.getInstance().releaseConnection(connection);

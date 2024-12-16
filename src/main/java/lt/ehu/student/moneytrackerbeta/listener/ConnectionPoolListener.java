@@ -4,8 +4,6 @@ import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.annotation.WebListener;
 import lt.ehu.student.moneytrackerbeta.connection.ConnectionPool;
-import lt.ehu.student.moneytrackerbeta.exception.ConnectionPoolException;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.sql.Driver;
@@ -24,8 +22,8 @@ public class ConnectionPoolListener implements ServletContextListener {
             // Store the initialized pool in ServletContext for verification
             sce.getServletContext().setAttribute("connectionPoolInitialized", true);
         } catch (Exception e) {
-            logger.error("Failed to initialize connection pool", e);
-            throw new ConnectionPoolException("Failed to initialize connection pool", e);
+            logger.fatal("Failed to initialize connection pool", e);
+            throw new RuntimeException("Failed to initialize connection pool", e);
         }
     }
 

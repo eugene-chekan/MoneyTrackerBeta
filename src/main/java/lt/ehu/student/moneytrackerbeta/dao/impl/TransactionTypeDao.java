@@ -2,6 +2,7 @@ package lt.ehu.student.moneytrackerbeta.dao.impl;
 
 import lt.ehu.student.moneytrackerbeta.connection.ConnectionPool;
 import lt.ehu.student.moneytrackerbeta.constant.DatabaseColumnName;
+import lt.ehu.student.moneytrackerbeta.exception.ConnectionPoolException;
 import lt.ehu.student.moneytrackerbeta.exception.DaoException;
 import lt.ehu.student.moneytrackerbeta.model.TransactionType;
 import org.apache.logging.log4j.LogManager;
@@ -38,6 +39,9 @@ public class TransactionTypeDao {
         } catch (SQLException e) {
             logger.error("Error while retrieving transaction types", e);
             throw new DaoException("Error while retrieving transaction types", e);
+        } catch (ConnectionPoolException e) {
+            logger.fatal("Error while retrieving transaction types", e);
+            throw new RuntimeException("Error while retrieving transaction types", e);
         } finally {
             if (connection != null) {
                 ConnectionPool.getInstance().releaseConnection(connection);
@@ -63,6 +67,9 @@ public class TransactionTypeDao {
         } catch (SQLException e) {
             logger.error("Error while retrieving transaction types", e);
             throw new DaoException("Error while retrieving transaction types", e);
+        } catch (ConnectionPoolException e) {
+            logger.fatal("Error while retrieving transaction types", e);
+            throw new RuntimeException("Error while retrieving transaction types", e);
         } finally {
             if (connection != null) {
                 ConnectionPool.getInstance().releaseConnection(connection);
@@ -88,6 +95,9 @@ public class TransactionTypeDao {
         } catch (SQLException e) {
             logger.error("Error while retrieving transaction type", e);
             throw new DaoException("Error while retrieving transaction type", e);
+        } catch (ConnectionPoolException e) {
+            logger.fatal("Error while retrieving transaction type", e);
+            throw new RuntimeException("Error while retrieving transaction type", e);
         } finally {
             if (connection != null) {
                 ConnectionPool.getInstance().releaseConnection(connection);

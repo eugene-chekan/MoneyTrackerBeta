@@ -3,6 +3,7 @@ package lt.ehu.student.moneytrackerbeta.dao.impl;
 import lt.ehu.student.moneytrackerbeta.connection.ConnectionPool;
 import lt.ehu.student.moneytrackerbeta.constant.DatabaseColumnName;
 import lt.ehu.student.moneytrackerbeta.dao.BaseDao;
+import lt.ehu.student.moneytrackerbeta.exception.ConnectionPoolException;
 import lt.ehu.student.moneytrackerbeta.exception.DaoException;
 import lt.ehu.student.moneytrackerbeta.model.Asset;
 import org.apache.logging.log4j.LogManager;
@@ -45,6 +46,9 @@ public class AssetDao implements BaseDao<Asset> {
         } catch (SQLException e) {
             logger.error("Error while adding new asset to the database", e);
             throw new DaoException("Error while adding new asset to the database", e);
+        } catch (ConnectionPoolException e) {
+            logger.fatal("Error while adding new asset to the database", e);
+            throw new RuntimeException("Error while adding new asset to the database", e);
         } finally {
             if (connection != null) {
                 ConnectionPool.getInstance().releaseConnection(connection);
@@ -84,6 +88,9 @@ public class AssetDao implements BaseDao<Asset> {
         } catch (SQLException e) {
             logger.error("Error while retrieving assets from the database", e);
             throw new DaoException("Error while retrieving assets from the database", e);
+        } catch (ConnectionPoolException e) {
+            logger.fatal("Error while retrieving assets from the database", e);
+            throw new RuntimeException("Error while retrieving assets from the database", e);
         } finally {
             if (connection != null) {
                 ConnectionPool.getInstance().releaseConnection(connection);
@@ -115,6 +122,9 @@ public class AssetDao implements BaseDao<Asset> {
         } catch (SQLException e) {
             logger.error("Error while retrieving asset from the database", e);
             throw new DaoException("Error while retrieving asset from the database", e);
+        } catch (ConnectionPoolException e) {
+            logger.fatal("Error while retrieving asset from the database", e);
+            throw new RuntimeException("Error while retrieving asset from the database", e);
         } finally {
             if (connection != null) {
                 ConnectionPool.getInstance().releaseConnection(connection);
@@ -136,6 +146,9 @@ public class AssetDao implements BaseDao<Asset> {
         } catch (SQLException e) {
             logger.error("Error while retrieving assets from the database", e);
             throw new DaoException("Error while retrieving assets from the database", e);
+        } catch (ConnectionPoolException e) {
+            logger.fatal("Error while retrieving assets from the database", e);
+            throw new RuntimeException("Error while retrieving assets from the database", e);
         } finally {
             if (connection != null) {
                 ConnectionPool.getInstance().releaseConnection(connection);
@@ -167,6 +180,9 @@ public class AssetDao implements BaseDao<Asset> {
         } catch (SQLException e) {
             logger.error("Error while retrieving asset from the database", e);
             throw new DaoException("Error while retrieving asset from the database", e);
+        } catch (ConnectionPoolException e) {
+            logger.fatal("Error while retrieving asset from the database", e);
+            throw new RuntimeException("Error while retrieving asset from the database", e);
         } finally {
             if (connection != null) {
                 ConnectionPool.getInstance().releaseConnection(connection);

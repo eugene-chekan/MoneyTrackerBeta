@@ -3,6 +3,7 @@ package lt.ehu.student.moneytrackerbeta.dao.impl;
 import lt.ehu.student.moneytrackerbeta.connection.ConnectionPool;
 import lt.ehu.student.moneytrackerbeta.constant.DatabaseColumnName;
 import lt.ehu.student.moneytrackerbeta.dao.BaseDao;
+import lt.ehu.student.moneytrackerbeta.exception.ConnectionPoolException;
 import lt.ehu.student.moneytrackerbeta.exception.DaoException;
 import lt.ehu.student.moneytrackerbeta.model.Currency;
 import org.apache.logging.log4j.LogManager;
@@ -41,6 +42,9 @@ public class CurrencyDao implements BaseDao<Currency> {
         } catch (SQLException e) {
             logger.error("Error while retrieving currencies from database", e);
             throw new DaoException("Error while retrieving currencies from database", e);
+        } catch (ConnectionPoolException e) {
+            logger.fatal("Error while retrieving currencies from database", e);
+            throw new RuntimeException("Error while retrieving currencies from database", e);
         } finally {
             if (connection != null) {
                 ConnectionPool.getInstance().releaseConnection(connection);
@@ -68,6 +72,9 @@ public class CurrencyDao implements BaseDao<Currency> {
         } catch (SQLException e) {
             logger.error("Error while retrieving currency from database", e);
             throw new DaoException("Error while retrieving currency from database", e);
+        } catch (ConnectionPoolException e) {
+            logger.fatal("Error while retrieving currency from database", e);
+            throw new RuntimeException("Error while retrieving currency from database", e);
         } finally {
             if (connection != null) {
                 ConnectionPool.getInstance().releaseConnection(connection);
