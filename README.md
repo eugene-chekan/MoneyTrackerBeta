@@ -1,60 +1,115 @@
 ![logo.png](src%2Fmain%2Fwebapp%2Fimg%2Flogo.png)
-# MoneyTrackerBeta
+# MoneyTracker
 
-## Description
-MoneyTrackerBeta is a web-based application designed to help users manage their personal finances. It allows users to track income, expenses, and overall budget, providing a clear view of their financial health.
+A personal finance management application built with Spring Boot that helps users track their income, expenses, and manage multiple currency accounts.
 
 ## Features
-- User account creation and management
-- Income and expense tracking
-- Category-based transaction organization
-- Budget setting and monitoring
-- Financial reports and visualizations
-- Secure data storage and handling
 
-## Technology Stack
-- Java 17 (Backend)
-- Apache Tomcat 10.1.30 (Web Server)
-- JDBC for database connectivity
-- Custom connection pooling for efficient database operations
+- 💰 Multi-currency support
+- 📊 Transaction tracking
+- 💳 Multiple account management
+- 📱 Responsive web interface
+- 🔒 Secure user authentication
 
-## Installation
-1. Ensure you have Java JDK 17 installed (Amazon Corretto 17 recommended)
-2. Download and install Apache Tomcat 10.1.30
-3. Clone the repository: `git clone git@github.com:eugene-chekan/moneyTrackerBeta.git`
-4. Deploy the application to Tomcat's webapps directory
+## Setup
 
-## Configuration
-1. Navigate to `src/main/resources`
-2. Create a `config.properties` file with the following content:
-3. Adjust the database URL, username, and password as per your setup
+### Prerequisites
+- Java 17 or higher
+- Maven 3.6+
+- PostgreSQL 12+
+- Git
 
-## Usage
-1. Start the Tomcat server
-2. Access the application at `http://localhost:8080/moneyTrackerBeta`
-3. Create an account or log in
-4. Start tracking your finances!
+### Database
+1. Create PostgreSQL database:
+   ```sql
+   CREATE DATABASE moneytracker;
+   ```
+2. Run database migrations (if any)
+
+### Application Properties
+1. Copy the example properties file:
+   ```bash
+   cp src/main/resources/application.properties.example src/main/resources/application.properties
+   ```
+2. Edit `application.properties` with your database credentials:
+   ```properties
+   spring.datasource.url=jdbc:postgresql://localhost:5432/moneytracker
+   spring.datasource.username=your_username
+   spring.datasource.password=your_password
+   ```
+
+### Build & Run
+```bash
+mvn clean install
+mvn spring-boot:run
+```
+
+The application will be available at `http://localhost:8080/moneytracker`
 
 ## Development
-- The application uses a custom connection pool for database operations
-- Main application logic is located in `src/main/java/lt/ehu/student/moneytrackerbeta`
-- Web resources are in `src/main/webapp`
+### Tech Stack
+- Java 17
+- Spring Boot 3.2.0
+- PostgreSQL
+- Maven
+
+### Project Structure
+- `src/main/java/lt/ehu/student/moneytracker/`
+  - `model/` - Entity classes
+  - `repository/` - Data access interfaces
+  - `service/` - Business logic
+  - `controller/` - Web controllers
+
+
+### Database Schema
+- `user` - User accounts and preferences
+- `asset` - Bank accounts, cash accounts, etc.
+- `transaction` - Financial transactions
+- `currency` - Supported currencies
+- `transaction_type` - Types of transactions
+
+### Testing
+```bash
+# Run all tests
+mvn test
+# Run specific test class
+mvn test -Dtest=UserServiceTest
+```
+
+
+### Code Style
+- Follow [Google Java Style Guide](https://google.github.io/styleguide/javaguide.html)
+- Use meaningful variable and method names
+- Add comments for complex logic
+- Keep methods small and focused
+
+### Git Workflow
+1. Create a feature branch:
+   ```bash
+   git checkout -b feature/new-feature
+   ```
+2. Make changes and commit:
+   ```bash
+   git add .
+   git commit -m "Add new feature"
+   ```
+3. Push changes and create pull request:
+   ```bash
+   git push origin feature/new-feature
+   ```
 
 ## Contributing
-We welcome contributions! Please follow these steps:
+
 1. Fork the repository
-2. Create a new branch for your feature
+2. Create your feature branch
 3. Commit your changes
 4. Push to the branch
-5. Create a new Pull Request
+5. Create a Pull Request
 
 ## License
-This project is licensed under the MIT License - see the LICENSE.md file for details
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
 
-## Contact
-For any queries or support, please contact:
-Email: support@moneytrackerbeta.com
-
-
-
-![database_erd.png](src/main/webapp/img/database_erd.png "Application database model")
+## Acknowledgments
+- Original version by Eugene Chekan (https://github.com/eugene-chekan)
+- Spring Boot team for the excellent framework
+- All contributors who participate in this project

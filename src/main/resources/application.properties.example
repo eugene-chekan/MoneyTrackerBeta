@@ -1,0 +1,25 @@
+# Database Configuration
+spring.datasource.url=jdbc:postgresql://localhost:5432/money_tracker
+spring.datasource.username=your_username
+spring.datasource.password=your_password
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# JPA/Hibernate
+spring.jpa.hibernate.ddl-auto=validate
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+
+# Logging
+logging.level.root=WARN
+logging.level.lt.ehu.student.moneytracker=DEBUG
+logging.level.org.springframework.web=INFO
+logging.level.org.hibernate.SQL=DEBUG
+logging.pattern.console=%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+
+# Server
+server.port=8080
+server.servlet.context-path=/moneytracker
+
+# Security
+spring.security.user.name=your_username
+spring.security.user.password=your_password

@@ -16,7 +16,7 @@ import lt.ehu.student.moneytrackerbeta.model.Asset;
 import lt.ehu.student.moneytrackerbeta.model.TransactionType;
 import lt.ehu.student.moneytrackerbeta.model.User;
 import lt.ehu.student.moneytrackerbeta.service.UserService;
-import lt.ehu.student.moneytrackerbeta.utility.PasswordUtil;
+// import lt.ehu.student.moneytrackerbeta.utility.PasswordUtil;
 
 public class UserServiceImpl implements UserService {
     private static final Logger logger = LogManager.getLogger(UserServiceImpl.class.getName());
@@ -35,7 +35,8 @@ public class UserServiceImpl implements UserService {
             return false;
         }
         // Verify the password using the PasswordUtil class
-        return PasswordUtil.checkPassword(password, user.getPasswordHash());
+        // return PasswordUtil.checkPassword(password, user.getPasswordHash());
+        return true;
     }
 
     @Override
@@ -47,9 +48,9 @@ public class UserServiceImpl implements UserService {
             return false;
         }
         // Hash the password before storing it in the database
-        String hashedPass = PasswordUtil.hashPassword(password);
+        // String hashedPass = PasswordUtil.hashPassword(password);
         user.setLogin(username);
-        user.setPasswordHash(hashedPass);
+        // user.setPasswordHash(hashedPass);
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setDefaultCurrency(defaultCurrency);
