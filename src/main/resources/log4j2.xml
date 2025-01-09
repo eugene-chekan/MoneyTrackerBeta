@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Properties>
+        <Property name="DATE">${date:yyyy-MM-dd}</Property>
+        <Property name="BASE_PATH">${sys:user.home}/moneytracker/logs</Property>
+        <Property name="STDOUT_LOG_MSG_PATTERN">%d{HH:mm:ss} [%-5level] %logger{2} - %msg%n</Property>
+        <Property name="FILE_LOG_MSG_PATTERN">%d{yyyy-MM-dd HH:mm:ss} [%-25t] [%-5level] %logger{5} - %msg%n</Property>
+    </Properties>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${STDOUT_LOG_MSG_PATTERN}"/>
+        </Console>
+        <RollingFile name="File"
+                   fileName="${BASE_PATH}/${DATE}-moneyTracker.log"
+                   filePattern="${BASE_PATH}/archive/%d{yyyy-MM-dd}-moneyTracker-%i.log.gz">
+            <PatternLayout pattern="${FILE_LOG_MSG_PATTERN}"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+                <TimeBasedTriggeringPolicy/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Root level="debug">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="File"/>
+        </Root>
+    </Loggers>
+</Configuration>
