@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <!-- Welcome Section -->
+        <div class="row mb-4">
+            <div class="col">
+                <h2>Welcome, <span th:text="${user.firstName ?: user.login}">User</span>!</h2>
+            </div>
+        </div>
+
+        <!-- Assets Summary -->
+        <div class="row mb-4">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Your Assets</h5>
+                        <a th:href="@{/assets/new}" class="btn btn-primary btn-sm">Add Asset</a>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(assets)}" class="text-center text-muted">
+                            <p>You don't have any assets yet.</p>
+                            <a th:href="@{/assets/new}" class="btn btn-outline-primary">Add Your First Asset</a>
+                        </div>
+                        <div th:unless="${#lists.isEmpty(assets)}" class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                        <th class="text-end">Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="asset : ${assets}">
+                                        <td th:text="${asset.name}">Cash</td>
+                                        <td th:text="${asset.type.name}">Cash</td>
+                                        <td class="text-end">
+                                            <span th:text="${#numbers.formatDecimal(asset.balance, 1, 2)}">1000.00</span>
+                                            <span th:text="${asset.currency.code}">USD</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Recent Transactions</h5>
+                        <a th:href="@{/transactions/new}" class="btn btn-primary btn-sm">New Transaction</a>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(recentTransactions)}" class="text-center text-muted">
+                            <p>No recent transactions.</p>
+                            <a th:href="@{/transactions/new}" class="btn btn-outline-primary">Create Your First Transaction</a>
+                        </div>
+                        <div th:unless="${#lists.isEmpty(recentTransactions)}" class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Type</th>
+                                        <th>From</th>
+                                        <th>To</th>
+                                        <th class="text-end">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="transaction : ${recentTransactions}">
+                                        <td th:text="${#temporals.format(transaction.timestamp, 'dd-MM-yyyy HH:mm')}">01-01-2024</td>
+                                        <td th:text="${transaction.type}">Transfer</td>
+                                        <td th:text="${transaction.source?.name ?: '-'}">Account 1</td>
+                                        <td th:text="${transaction.destination?.name ?: '-'}">Account 2</td>
+                                        <td class="text-end">
+                                            <span th:text="${#numbers.formatDecimal(transaction.amount, 1, 2)}">100.00</span>
+                                            <span th:text="${transaction.currency.code}">USD</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

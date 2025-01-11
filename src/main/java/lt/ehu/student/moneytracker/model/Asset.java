@@ -11,25 +11,24 @@ import java.util.UUID;
 @Data
 public class Asset {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "user_id")
+    private Integer userId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "type_id", nullable = false)
-    private TransactionType type;
+    @ManyToOne
+    @JoinColumn(name = "type_id")
+    private AssetType type;
 
-    @Column(length = 50, nullable = false)
+    @Column(length = 50)
     private String name;
-
-    @Column(nullable = false, precision = 10, scale = 2)
+    
+    @Column(precision = 10, scale = 2)
     private BigDecimal balance;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "currency_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "currency_id")
     private Currency currency;
 
     @Column(columnDefinition = "text")

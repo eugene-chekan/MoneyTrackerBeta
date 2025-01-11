@@ -9,4 +9,4 @@ public class MoneyTrackerApplication {
     public static void main(String[] args) {
         SpringApplication.run(MoneyTrackerApplication.class, args);
     }
-} 
+}

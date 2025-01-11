@@ -5,8 +5,22 @@ spring.datasource.password=your_password
 spring.datasource.driver-class-name=org.postgresql.Driver
 
 # JPA/Hibernate
+# Controls database schema generation
+# validate: checks if the schema matches the database
+# update: updates the schema to match the entity classes
+# create: creates the schema
+# create-drop: creates the schema and drops it after the session is closed
+# none: no schema generation
 spring.jpa.hibernate.ddl-auto=validate
+
+# Shows SQL queries in logs if true
+# Useful for debugging and development
+# Consider disabling in production
 spring.jpa.show-sql=true
+
+# Formats SQL queries in logs if true
+# Useful for debugging and development
+# Consider disabling in production
 spring.jpa.properties.hibernate.format_sql=true
 
 # Logging
@@ -19,7 +33,3 @@ logging.pattern.console=%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} -
 # Server
 server.port=8080
 server.servlet.context-path=/moneytracker
-
-# Security
-spring.security.user.name=your_username
-spring.security.user.password=your_password

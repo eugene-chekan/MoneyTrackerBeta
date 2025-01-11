@@ -3,28 +3,6 @@
 BEGIN;
 
 
-ALTER TABLE IF EXISTS public.asset DROP CONSTRAINT IF EXISTS currency__fk;
-
-ALTER TABLE IF EXISTS public.asset DROP CONSTRAINT IF EXISTS type_id__fk;
-
-ALTER TABLE IF EXISTS public.asset DROP CONSTRAINT IF EXISTS user_id__fk;
-
-ALTER TABLE IF EXISTS public.transaction DROP CONSTRAINT IF EXISTS currency__fk;
-
-ALTER TABLE IF EXISTS public.transaction DROP CONSTRAINT IF EXISTS destination_asset__fk;
-
-ALTER TABLE IF EXISTS public.transaction DROP CONSTRAINT IF EXISTS source_asset__fk;
-
-ALTER TABLE IF EXISTS public.transaction DROP CONSTRAINT IF EXISTS type_id__fk;
-
-ALTER TABLE IF EXISTS public.transaction DROP CONSTRAINT IF EXISTS user_id__fk;
-
-ALTER TABLE IF EXISTS public."user" DROP CONSTRAINT IF EXISTS def_currency__fk;
-
-
-
-DROP TABLE IF EXISTS public.asset;
-
 CREATE TABLE IF NOT EXISTS public.asset
 (
     id uuid NOT NULL,
@@ -37,18 +15,22 @@ CREATE TABLE IF NOT EXISTS public.asset
     CONSTRAINT asset_pkey PRIMARY KEY (id)
 );
 
-DROP TABLE IF EXISTS public.currency;
-
 CREATE TABLE IF NOT EXISTS public.currency
 (
-    id serial NOT NULL,
+    id integer NOT NULL,
     code character varying(3) COLLATE pg_catalog."default",
     symbol character varying(3) COLLATE pg_catalog."default",
     name character varying(50) COLLATE pg_catalog."default",
     CONSTRAINT currency_pkey PRIMARY KEY (id)
 );
 
-DROP TABLE IF EXISTS public.transaction;
+CREATE TABLE IF NOT EXISTS public.role
+(
+    id serial NOT NULL,
+    name character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT role_pkey PRIMARY KEY (id),
+    CONSTRAINT role_name_key UNIQUE (name)
+);
 
 CREATE TABLE IF NOT EXISTS public.transaction
 (
@@ -64,8 +46,6 @@ CREATE TABLE IF NOT EXISTS public.transaction
     CONSTRAINT transaction_pkey PRIMARY KEY (id)
 );
 
-DROP TABLE IF EXISTS public.transaction_type;
-
 CREATE TABLE IF NOT EXISTS public.transaction_type
 (
     id serial NOT NULL,
@@ -74,9 +54,7 @@ CREATE TABLE IF NOT EXISTS public.transaction_type
     CONSTRAINT transaction_type_pkey PRIMARY KEY (id)
 );
 
-DROP TABLE IF EXISTS public."user";
-
-CREATE TABLE IF NOT EXISTS public."user"
+CREATE TABLE IF NOT EXISTS public.users
 (
     id serial NOT NULL,
     login character varying(50) COLLATE pg_catalog."default" NOT NULL,
@@ -87,6 +65,13 @@ CREATE TABLE IF NOT EXISTS public."user"
     email character varying(50) COLLATE pg_catalog."default",
     registration_date timestamp without time zone NOT NULL,
     CONSTRAINT user_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS public.user_role
+(
+    user_id integer NOT NULL,
+    role_id integer NOT NULL,
+    CONSTRAINT user_role_pkey PRIMARY KEY (user_id, role_id)
 );
 
 ALTER TABLE IF EXISTS public.asset
@@ -107,7 +92,7 @@ ALTER TABLE IF EXISTS public.asset
 
 ALTER TABLE IF EXISTS public.asset
     ADD CONSTRAINT user_id__fk FOREIGN KEY (user_id)
-    REFERENCES public."user" (id) MATCH SIMPLE
+    REFERENCES public.users (id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION
     NOT VALID;
@@ -147,17 +132,56 @@ ALTER TABLE IF EXISTS public.transaction
 
 ALTER TABLE IF EXISTS public.transaction
     ADD CONSTRAINT user_id__fk FOREIGN KEY (user_id)
-    REFERENCES public."user" (id) MATCH SIMPLE
+    REFERENCES public.users (id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION
     NOT VALID;
 
 
-ALTER TABLE IF EXISTS public."user"
+ALTER TABLE IF EXISTS public.users
     ADD CONSTRAINT def_currency__fk FOREIGN KEY (default_currency)
     REFERENCES public.currency (id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION
     NOT VALID;
+
+
+ALTER TABLE IF EXISTS public.user_role
+    ADD CONSTRAINT user_role_role_id_fkey FOREIGN KEY (role_id)
+    REFERENCES public.role (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+
+
+ALTER TABLE IF EXISTS public.user_role
+    ADD CONSTRAINT user_role_user_id_fkey FOREIGN KEY (user_id)
+    REFERENCES public.users (id) MATCH SIMPLE
+    ON UPDATE NO ACTION
+    ON DELETE NO ACTION;
+
+-- Insert basic roles
+INSERT INTO "role" (name) VALUES 
+    ('USER'),
+    ('ADMIN');
+
+-- Insert basic types
+INSERT INTO asset_types (name, description) VALUES 
+    ('Cash', 'Physical cash holdings'),
+    ('Bank Account', 'Checking or savings accounts'),
+    ('Credit Card', 'Credit card accounts'),
+    ('Investment', 'Investment accounts, stocks, bonds'),
+    ('Other', 'Other asset types');
+
+-- Insert basic currencies
+INSERT INTO currency (code, symbol, name) VALUES 
+    ('EUR', '€', 'Euro'),
+    ('USD', '$', 'US Dollar'),
+    ('GBP', '£', 'British Pound');
+
+-- Insert basic transaction types
+INSERT INTO transaction_type (name, description) VALUES 
+    ('Income', 'Money added to an account'),
+    ('Expense', 'Money removed from an account'),
+    ('Transfer', 'Money transferred between accounts');
 
 END;

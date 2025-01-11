@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title>New Asset</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title mb-0">New Asset</h3>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/assets}" method="post" th:object="${asset}">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Asset Name</label>
+                                <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                                <div class="form-text">Give your asset a meaningful name (e.g., "Main Savings", "Investment Account")</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="type" class="form-label">Asset Type</label>
+                                <select class="form-select" id="type" th:field="*{type.id}" required>
+                                    <option value="">Select type</option>
+                                    <option th:each="assetType : ${assetTypes}"
+                                            th:value="${assetType.id}"
+                                            th:text="${assetType.name}">Cash</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="balance" class="form-label">Initial Balance</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="balance" th:field="*{balance}" 
+                                           step="0.01" required>
+                                    <select class="form-select" id="currency" th:field="*{currency.id}" required>
+                                        <option value="">Select currency</option>
+                                        <option th:each="curr : ${currencies}"
+                                                th:value="${curr.id}"
+                                                th:text="${curr.code}">USD</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" th:field="*{description}" 
+                                          rows="3"></textarea>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">Create Asset</button>
+                                <a th:href="@{/assets}" class="btn btn-outline-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
