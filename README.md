@@ -1,4 +1,4 @@
-![logo](src\main\resources\img\logo-black-520x520.png)
+![logo](src/main/resources/static/img/logo-white-520x520.png)
 # MoneyTracker
 
 A personal finance management application built with Spring Boot that helps users track their income, expenses, and manage multiple currency accounts.
