@@ -2,9 +2,11 @@ package lt.ehu.student.moneytracker.controller;
 
 import lt.ehu.student.moneytracker.model.Asset;
 import lt.ehu.student.moneytracker.model.Transaction;
+import lt.ehu.student.moneytracker.model.Category;
 import lt.ehu.student.moneytracker.service.AssetService;
 import lt.ehu.student.moneytracker.service.TransactionService;
 import lt.ehu.student.moneytracker.service.UserService;
+import lt.ehu.student.moneytracker.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,19 +19,22 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
-@Secured("USER")
+@Secured({"USER", "ADMIN"})
 public class DashboardController {
     private final AssetService assetService;
     private final TransactionService transactionService;
     private final UserService userService;
+    private final CategoryService categoryService;
 
     @Autowired
     public DashboardController(AssetService assetService, 
                              TransactionService transactionService,
-                             UserService userService) {
+                             UserService userService,
+                             CategoryService categoryService) {
         this.assetService = assetService;
         this.transactionService = transactionService;
         this.userService = userService;
+        this.categoryService = categoryService;
     }
 
     @GetMapping({"/", "/dashboard"})
@@ -44,9 +49,11 @@ public class DashboardController {
                 LocalDateTime.now().minusDays(30),
                 LocalDateTime.now()
             );
+        List<Category> categories = categoryService.findByUserId(user.getId());
 
         model.addAttribute("assets", assets);
         model.addAttribute("recentTransactions", recentTransactions);
+        model.addAttribute("categories", categories);
         model.addAttribute("user", user);
         
         return "dashboard";

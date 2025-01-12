@@ -1,5 +1,6 @@
 package lt.ehu.student.moneytracker.service.impl;
 
+import lt.ehu.student.moneytracker.exception.ResourceNotFoundException;
 import lt.ehu.student.moneytracker.model.Currency;
 import lt.ehu.student.moneytracker.repository.CurrencyRepository;
 import lt.ehu.student.moneytracker.service.CurrencyService;
@@ -31,17 +32,29 @@ public class CurrencyServiceImpl implements CurrencyService {
     }
 
     @Override
+    public Currency getById(Integer id) {
+        return findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Currency not found"));
+    }
+
+    @Override
     public Optional<Currency> findByCode(String code) {
         return currencyRepository.findByCode(code);
     }
 
     @Override
     public Currency save(Currency currency) {
+        if (currency.getId() == null && currencyRepository.existsByCode(currency.getCode())) {
+            throw new IllegalArgumentException("Currency with this code already exists");
+        }
         return currencyRepository.save(currency);
     }
 
     @Override
     public void delete(Integer id) {
+        if (!currencyRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Currency not found");
+        }
         currencyRepository.deleteById(id);
     }
 

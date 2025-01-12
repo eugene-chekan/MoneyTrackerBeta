@@ -2,27 +2,37 @@ package lt.ehu.student.moneytracker.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 @Entity
-@Table(name = "transaction")
+@Table(name = "transactions")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "user_id", nullable = false)
-    private Integer userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "type", nullable = false)
     private TransactionType type;
 
-    @Column(name = "timestamp", nullable = false)
+    @CreationTimestamp
+    @Column(name = "timestamp", nullable = false, updatable = false)
     private LocalDateTime timestamp;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -42,4 +52,8 @@ public class Transaction {
 
     @Column(columnDefinition = "text")
     private String comment;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 }

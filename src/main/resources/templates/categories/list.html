@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Categories</title>
+</head>
+<body>
+    <h1>Categories</h1>
+    
+    <!-- Category Type Selector -->
+    <div>
+        <a th:each="type : ${types}" 
+           th:href="@{/categories(type=${type})}"
+           th:text="${type}"
+           th:class="${type == selectedType ? 'active' : ''}">
+        </a>
+    </div>
+
+    <!-- Categories List -->
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="category : ${categories}">
+                <td th:text="${category.name}">Category Name</td>
+                <td>
+                    <a th:href="@{/categories/{id}/edit(id=${category.id})}">Edit</a>
+                    <a th:href="@{/categories/{id}/delete(id=${category.id})}"
+                       onclick="return confirm('Are you sure?')">Delete</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <a th:href="@{/categories/new}">Add New Category</a>
+</body>
+</html> 

@@ -24,7 +24,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Public URLs
                 .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+                .requestMatchers("/css/**", "/js/**", "/img/**", "/favicon.ico").permitAll()
                 // Admin URLs
                 .requestMatchers("/admin/**").hasAuthority("ADMIN")
                 // All other URLs require authentication

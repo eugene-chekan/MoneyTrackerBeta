@@ -8,9 +8,11 @@ import java.util.UUID;
 public interface AssetService {
     Asset save(Asset asset);
     Optional<Asset> findById(UUID id);
+    Asset getById(UUID id);
     List<Asset> findByUserId(Integer userId);
     List<Asset> findByUserIdAndType(Integer userId, Integer typeId);
     Optional<Asset> findByIdAndUserId(UUID id, Integer userId);
     void delete(UUID id);
-    Object count();
+    Long count();
+    void validateUserAccess(UUID assetId, Integer userId);
 } 

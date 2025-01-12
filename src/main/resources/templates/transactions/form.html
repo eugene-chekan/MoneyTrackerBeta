@@ -16,6 +16,16 @@
                     <div class="card-body">
                         <form th:action="@{/transactions}" method="post" th:object="${transaction}">
                             <div class="mb-3">
+                                <label for="category" class="form-label">Category</label>
+                                <select class="form-select" id="category" th:field="*{category.id}">
+                                    <option value="">Select category</option>
+                                    <option th:each="category : ${categories}"
+                                            th:value="${category.id}"
+                                            th:text="${category.name + ' ' + category.emojiIcon}">Category</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
                                 <label for="type" class="form-label">Transaction Type</label>
                                 <select class="form-select" id="type" th:field="*{type.id}" required>
                                     <option value="">Select type</option>

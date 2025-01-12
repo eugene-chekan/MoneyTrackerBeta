@@ -22,7 +22,7 @@ import java.math.BigDecimal;
 
 @Controller
 @RequestMapping("/assets")
-@Secured("USER")
+@Secured({"USER", "ADMIN"})
 public class AssetController {
     private final AssetService assetService;
     private final UserService userService;
@@ -85,7 +85,7 @@ public class AssetController {
         asset.setCurrency(currencyService.findById(asset.getCurrency().getId())
             .orElseThrow(() -> new IllegalArgumentException("Invalid currency")));
             
-        asset.setUserId(user.getId());
+        asset.setUser(user);
         assetService.save(asset);
         
         redirectAttributes.addFlashAttribute("success", "Asset was successfully created!");

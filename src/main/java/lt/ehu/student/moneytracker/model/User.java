@@ -1,20 +1,27 @@
 package lt.ehu.student.moneytracker.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name = "users")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 50, unique = true)
     private String login;
 
     @Column(name = "password_hash", nullable = false, length = 100)
@@ -26,20 +33,18 @@ public class User {
     @Column(name = "last_name", length = 100)
     private String lastName;
 
-    @Column(name = "default_currency", nullable = false)
-    private Integer defaultCurrency;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "default_currency", nullable = false)
+    private Currency defaultCurrency;
 
-    @Column(length = 50)
+    @Column(length = 50, unique = true)
     private String email;
 
-    @Column(name = "registration_date")
+    @CreationTimestamp
+    @Column(name = "registration_date", nullable = false, updatable = false)
     private LocalDateTime registrationDate;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "user_role",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<Role> roles = new HashSet<>();
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "role_id", nullable = false)
+    private Role role;
 }

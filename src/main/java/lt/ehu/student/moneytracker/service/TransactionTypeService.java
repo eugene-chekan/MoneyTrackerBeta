@@ -9,5 +9,6 @@ public interface TransactionTypeService {
     Optional<TransactionType> findById(Integer id);
     Optional<TransactionType> findByName(String name);
     TransactionType save(TransactionType type);
+    TransactionType getById(Integer id);
     void delete(Integer id);
 } 

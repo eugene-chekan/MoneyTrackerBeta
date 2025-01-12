@@ -13,15 +13,18 @@ import lt.ehu.student.moneytracker.service.AssetService;
 
 @Controller
 @RequestMapping("/admin")
-@Secured("ADMIN")  // Only admins can access
+@Secured("ADMIN")
 public class AdminController {
     private final UserService userService;
     private final RoleService roleService;
-    private final AssetService assetService;
     private final CurrencyService currencyService;
+    private final AssetService assetService;
 
     @Autowired
-    public AdminController(UserService userService, RoleService roleService, CurrencyService currencyService, AssetService assetService) {
+    public AdminController(UserService userService, 
+                         RoleService roleService, 
+                         CurrencyService currencyService, 
+                         AssetService assetService) {
         this.userService = userService;
         this.roleService = roleService;
         this.currencyService = currencyService;
@@ -35,24 +38,17 @@ public class AdminController {
         return "admin/users/list";
     }
 
-    @PostMapping("/users/{userId}/roles")
-    public String updateUserRoles(@PathVariable Integer userId,
-                                @RequestParam String roleName,
-                                @RequestParam boolean add) {
-        if (add) {
-            userService.addRoleToUser(userId, roleName);
-        } else {
-            userService.removeRoleFromUser(userId, roleName);
-        }
+    @PostMapping("/users/{userId}/role")
+    public String updateUserRole(@PathVariable Integer userId,
+                               @RequestParam String roleName) {
+        userService.updateUserRole(userId, roleName);
         return "redirect:/admin/users";
     }
 
     @GetMapping
     public String dashboard(Model model) {
-        // Add basic statistics
         model.addAttribute("userCount", userService.count());
         model.addAttribute("currencyCount", currencyService.count());
-        // Add these if you have the corresponding services
         model.addAttribute("assetCount", assetService.count());
         // model.addAttribute("transactionCount", transactionService.count());
         

@@ -8,6 +8,7 @@ public interface CurrencyService {
     List<Currency> findAll();
     Optional<Currency> findById(Integer id);
     Optional<Currency> findByCode(String code);
+    Currency getById(Integer id);
     Currency save(Currency currency);
     void delete(Integer id);
     long count();

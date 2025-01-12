@@ -53,8 +53,44 @@
             </div>
         </div>
 
+        <!-- Categories Section -->
+        <div class="row mb-4">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Your Categories</h5>
+                        <a th:href="@{/categories/new}" class="btn btn-sm btn-primary">Add Category</a>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(categories)}" class="text-center text-muted">
+                            <p>You don't have any categories yet.</p>
+                            <a th:href="@{/categories/new}" class="btn btn-outline-primary">Add Your First Category</a>
+                        </div>
+                        <div th:unless="${#lists.isEmpty(categories)}" class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Emoji</th>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="category : ${categories}">
+                                        <td th:text="${category.emojiIcon}">🏠</td>
+                                        <td th:text="${category.name}">Housing</td>
+                                        <td th:text="${category.type}">Expense</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Recent Transactions -->
-        <div class="row">
+        <div class="row mt-4">
             <div class="col">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">

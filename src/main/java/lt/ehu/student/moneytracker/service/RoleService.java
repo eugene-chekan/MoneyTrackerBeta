@@ -8,6 +8,8 @@ public interface RoleService {
     List<Role> findAll();
     Optional<Role> findById(Integer id);
     Optional<Role> findByName(String name);
+    Role getById(Integer id);
+    Role getByName(String name);
     Role save(Role role);
     void delete(Integer id);
 } 
