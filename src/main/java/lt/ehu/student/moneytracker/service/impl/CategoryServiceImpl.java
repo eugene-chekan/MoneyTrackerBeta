@@ -79,4 +79,9 @@ public class CategoryServiceImpl implements CategoryService {
             .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         return categoryRepository.existsByNameAndUser(name, user);
     }
-} 
+
+    @Override
+    public Optional<Category> findByIdAndUserId(Long id, Integer userId) {
+        return categoryRepository.findByIdAndUserId(id, userId);
+    }
+}

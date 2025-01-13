@@ -9,6 +9,7 @@ import lt.ehu.student.moneytracker.service.RoleService;
 import lt.ehu.student.moneytracker.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lt.ehu.student.moneytracker.exception.ResourceNotFoundException;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Component
 @Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;

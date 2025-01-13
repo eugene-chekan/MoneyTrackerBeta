@@ -15,7 +15,7 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     List<Category> findByUserAndType(User user, Category.CategoryType type);
     List<Category> findByUser(User user);
     boolean existsByNameAndUser(String name, User user);
-    Optional<Category> findByIdAndUser(Long id, User user);
+    Optional<Category> findByIdAndUserId(Long id, Integer userId);
     
     @Query("SELECT c FROM Category c LEFT JOIN FETCH c.transactions " +
            "WHERE c.user = :user AND c.type = :type")

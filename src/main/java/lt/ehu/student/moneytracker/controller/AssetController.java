@@ -103,6 +103,7 @@ public class AssetController {
             
         model.addAttribute("asset", asset);
         model.addAttribute("currencies", currencyService.findAll());
+        model.addAttribute("assetTypes", assetTypeService.findAll());
         return "assets/form";
     }
 
@@ -117,6 +118,32 @@ public class AssetController {
         }
             
         assetService.delete(id);
+        return "redirect:/assets";
+    }
+
+    @PostMapping("/{id}/edit")
+    public String updateAsset(@PathVariable UUID id,
+                             @ModelAttribute Asset asset,
+                             @AuthenticationPrincipal UserDetails userDetails,
+                             RedirectAttributes redirectAttributes) {
+        var user = userService.findByLogin(userDetails.getUsername())
+            .orElseThrow(() -> new IllegalStateException("User not found"));
+            
+        var existingAsset = assetService.findByIdAndUserId(id, user.getId())
+            .orElseThrow(() -> new IllegalStateException("Asset not found"));
+        
+        // Update the existing asset's properties
+        existingAsset.setName(asset.getName());
+        existingAsset.setType(assetTypeService.findById(asset.getType().getId())
+            .orElseThrow(() -> new IllegalArgumentException("Invalid asset type")));
+        existingAsset.setCurrency(currencyService.findById(asset.getCurrency().getId())
+            .orElseThrow(() -> new IllegalArgumentException("Invalid currency")));
+        existingAsset.setBalance(asset.getBalance());
+        existingAsset.setDescription(asset.getDescription());
+        
+        assetService.save(existingAsset);
+        
+        redirectAttributes.addFlashAttribute("success", "Asset was successfully updated!");
         return "redirect:/assets";
     }
 }

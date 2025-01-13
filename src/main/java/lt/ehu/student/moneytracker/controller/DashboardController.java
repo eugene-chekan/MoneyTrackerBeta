@@ -2,18 +2,18 @@ package lt.ehu.student.moneytracker.controller;
 
 import lt.ehu.student.moneytracker.model.Asset;
 import lt.ehu.student.moneytracker.model.Transaction;
+import lt.ehu.student.moneytracker.model.User;
 import lt.ehu.student.moneytracker.model.Category;
 import lt.ehu.student.moneytracker.service.AssetService;
 import lt.ehu.student.moneytracker.service.TransactionService;
 import lt.ehu.student.moneytracker.service.UserService;
 import lt.ehu.student.moneytracker.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,7 +23,6 @@ import java.util.List;
 public class DashboardController {
     private final AssetService assetService;
     private final TransactionService transactionService;
-    private final UserService userService;
     private final CategoryService categoryService;
 
     @Autowired
@@ -33,15 +32,11 @@ public class DashboardController {
                              CategoryService categoryService) {
         this.assetService = assetService;
         this.transactionService = transactionService;
-        this.userService = userService;
         this.categoryService = categoryService;
     }
 
     @GetMapping({"/", "/dashboard"})
-    public String dashboard(@AuthenticationPrincipal UserDetails userDetails, Model model) {
-        var user = userService.findByLogin(userDetails.getUsername())
-            .orElseThrow(() -> new IllegalStateException("User not found"));
-        
+    public String dashboard(@ModelAttribute("currentUser") User user, Model model) {
         List<Asset> assets = assetService.findByUserId(user.getId());
         List<Transaction> recentTransactions = transactionService
             .findByUserIdAndDateRange(

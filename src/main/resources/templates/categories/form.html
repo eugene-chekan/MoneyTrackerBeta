@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title th:text="${category.id != null ? 'Edit Category' : 'New Category'}">Category Form</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title mb-0" th:text="${category.id != null ? 'Edit Category' : 'New Category'}">Category Form</h3>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{${category.id != null ? '/categories/' + category.id + '/edit' : '/categories'}}"
+                              method="post" 
+                              th:object="${category}">
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Category Icon</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="emojiInput" 
+                                           th:field="*{emojiIcon}" readonly required>
+                                    <button type="button" class="btn btn-outline-secondary" id="emojiPicker">
+                                        Pick Emoji
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Category Name</label>
+                                <input type="text" class="form-control" id="name" 
+                                       th:field="*{name}" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="type" class="form-label">Type</label>
+                                <select class="form-select" id="type" th:field="*{type}" required>
+                                    <option value="">Select type</option>
+                                    <option th:each="type : ${types}"
+                                            th:value="${type}"
+                                            th:text="${#strings.capitalize(#strings.toLowerCase(type))}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary" 
+                                        th:text="${category.id != null ? 'Update Category' : 'Create Category'}">
+                                    Submit
+                                </button>
+                                <a th:href="@{/categories}" class="btn btn-outline-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <th:block layout:fragment="scripts">
+        <script src="https://cdn.jsdelivr.net/npm/emoji-mart@latest/dist/browser.js"></script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const button = document.querySelector('#emojiPicker');
+                const input = document.querySelector('#emojiInput');
+                const pickerOptions = { onEmojiSelect: (emoji) => {
+                    console.log('Click');
+                    input.value = emoji.native;
+                    picker.remove();
+                }}
+                const picker = new EmojiMart.Picker(pickerOptions)
+                
+                button.addEventListener('click', () => {
+                    console.log('Button clicked');
+                    document.body.appendChild(picker);
+
+                    // Position the picker
+                    const rect = button.getBoundingClientRect();
+                    picker.style.position = 'fixed';
+                    picker.style.left = `${rect.left}px`;
+                    picker.style.top = `${rect.bottom + 5}px`;
+                    picker.style.zIndex = '1000';
+                    picker.textContent = 'Pick Emoji';
+                    
+                });
+
+                // Close picker when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (picker && !picker.contains(e.target) && e.target !== button) {
+                        picker.remove();
+                    }
+                });
+            });
+        </script>
+    </th:block>
+</body>
+</html>
