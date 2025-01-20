@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/main}">
 <head>
-    <title>New Transaction</title>
+    <title th:text="${transaction.id != null ? 'Edit Transaction' : 'New Transaction'}">Transaction Form</title>
 </head>
 <body>
     <div layout:fragment="content">
@@ -11,72 +11,68 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title mb-0">New Transaction</h3>
+                        <h3 class="card-title mb-0" th:text="${transaction.id != null ? 'Edit Transaction' : 'New Transaction'}">Transaction Form</h3>
                     </div>
                     <div class="card-body">
-                        <form th:action="@{/transactions}" method="post" th:object="${transaction}">
-                            <div class="mb-3">
-                                <label for="category" class="form-label">Category</label>
-                                <select class="form-select" id="category" th:field="*{category.id}">
-                                    <option value="">Select category</option>
-                                    <option th:each="category : ${categories}"
-                                            th:value="${category.id}"
-                                            th:text="${category.name + ' ' + category.emojiIcon}">Category</option>
-                                </select>
-                            </div>
+                        <form th:action="@{${transaction.id != null ? '/transactions/' + transaction.id + '/edit' : '/transactions'}}"
+                              method="post" 
+                              th:object="${transaction}">
 
+                            <!-- Transaction Type -->
                             <div class="mb-3">
-                                <label for="type" class="form-label">Transaction Type</label>
-                                <select class="form-select" id="type" th:field="*{type.id}" required>
+                                <label for="type" class="form-label">Type</label>
+                                <select class="form-select" id="type" th:field="*{type.id}" required
+                                        onchange="updateDropdowns()">
                                     <option value="">Select type</option>
-                                    <option th:each="type : ${transactionTypes}"
-                                            th:value="${type.id}"
-                                            th:text="${type.name}">Income</option>
+                                    <option th:each="transactionType : ${transactionTypes}"
+                                            th:value="${transactionType.id}"
+                                            th:text="${transactionType.name}">
+                                    </option>
                                 </select>
                             </div>
 
+                            <!-- Date and Time -->
                             <div class="mb-3">
-                                <label for="source" class="form-label">From Account</label>
+                                <label for="timestamp" class="form-label">Date</label>
+                                <input type="datetime-local" class="form-control" id="timestamp" 
+                                       th:field="*{timestamp}" required>
+                            </div>
+
+                            <!-- From Dropdown -->
+                            <div class="mb-3">
+                                <label for="source" class="form-label">From</label>
                                 <select class="form-select" id="source" th:field="*{source.id}" required>
-                                    <option value="">Select source</option>
-                                    <option th:each="asset : ${assets}"
-                                            th:value="${asset.id}"
-                                            th:text="${asset.name + ' (' + asset.currency.code + ')'}">Account</option>
+                                    <!-- Options will be populated by JavaScript -->
                                 </select>
                             </div>
 
+                            <!-- To Dropdown -->
                             <div class="mb-3">
-                                <label for="destination" class="form-label">To Account</label>
+                                <label for="destination" class="form-label">To</label>
                                 <select class="form-select" id="destination" th:field="*{destination.id}" required>
-                                    <option value="">Select destination</option>
-                                    <option th:each="asset : ${assets}"
-                                            th:value="${asset.id}"
-                                            th:text="${asset.name + ' (' + asset.currency.code + ')'}">Account</option>
+                                    <!-- Options will be populated by JavaScript -->
                                 </select>
                             </div>
 
+                            <!-- Amount -->
                             <div class="mb-3">
                                 <label for="amount" class="form-label">Amount</label>
-                                <div class="input-group">
-                                    <input type="number" class="form-control" id="amount" 
-                                           th:field="*{amount}" step="0.01" required>
-                                    <select class="form-select" id="currency" th:field="*{currency.id}" required>
-                                        <option value="">Select currency</option>
-                                        <option th:each="curr : ${currencies}"
-                                                th:value="${curr.id}"
-                                                th:text="${curr.code}">USD</option>
-                                    </select>
-                                </div>
+                                <input type="number" class="form-control" id="amount" 
+                                       th:field="*{amount}" step="0.01" required>
                             </div>
 
+                            <!-- Description/Comment -->
                             <div class="mb-3">
-                                <label for="comment" class="form-label">Comment</label>
-                                <textarea class="form-control" id="comment" th:field="*{comment}" 
-                                          rows="3"></textarea>
+                                <label for="comment" class="form-label">Description</label>
+                                <textarea class="form-control" id="comment" 
+                                         th:field="*{comment}" rows="3"></textarea>
                             </div>
 
                             <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary">Create Transaction</button>
+                                <button type="submit" class="btn btn-primary" 
+                                        th:text="${transaction.id != null ? 'Update Transaction' : 'Create Transaction'}">
+                                    Submit
+                                </button>
                                 <a th:href="@{/transactions}" class="btn btn-outline-secondary">Cancel</a>
                             </div>
                         </form>
@@ -85,5 +81,60 @@
             </div>
         </div>
     </div>
+
+    <th:block layout:fragment="scripts">
+        <script th:inline="javascript">
+            // Get data from Thymeleaf
+            const incomeCategories = /*[[${incomeCategories}]]*/ [];
+            const expenseCategories = /*[[${expenseCategories}]]*/ [];
+            const assets = /*[[${assets}]]*/ [];
+
+            // Set default date to now
+            document.addEventListener('DOMContentLoaded', function() {
+                const now = new Date();
+                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                document.getElementById('timestamp').value = now.toISOString().slice(0, 16);
+                updateDropdowns();
+            });
+
+            function updateDropdowns() {
+                const typeSelect = document.getElementById('type');
+                const selectedType = typeSelect.options[typeSelect.selectedIndex].text.toUpperCase();
+                const sourceSelect = document.getElementById('source');
+                const destinationSelect = document.getElementById('destination');
+
+                // Clear existing options
+                sourceSelect.innerHTML = '';
+                destinationSelect.innerHTML = '';
+
+                if (selectedType === 'INCOME') {
+                    // From: Income Categories, To: Assets
+                    populateSelect(sourceSelect, incomeCategories);
+                    populateSelect(destinationSelect, assets);
+                } else if (selectedType === 'EXPENSE') {
+                    // From: Assets, To: Expense Categories
+                    populateSelect(sourceSelect, assets);
+                    populateSelect(destinationSelect, expenseCategories);
+                } else if (selectedType === 'TRANSFER') {
+                    // Both: Assets
+                    populateSelect(sourceSelect, assets);
+                    populateSelect(destinationSelect, assets);
+                }
+            }
+
+            function populateSelect(select, items) {
+                select.innerHTML = '<option value="">Select...</option>';
+                items.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.id;
+                    option.text = item.name;
+                    if (item.emojiIcon) {
+                        option.text = item.emojiIcon + ' ' + item.name;
+                    }
+                    select.appendChild(option);
+                });
+            }
+        </script>
+    </th:block>
 </body>
 </html> 
