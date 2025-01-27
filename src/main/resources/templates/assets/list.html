@@ -62,7 +62,7 @@
                                 <td th:text="${asset.type.name}">Bank Account</td>
                                 <td class="text-end">
                                     <span th:text="${#numbers.formatDecimal(asset.balance, 1, 2)}">1000.00</span>
-                                    <span th:text="${asset.currency.code}" class="text-muted">USD</span>
+                                    <span th:text="${asset.currency.symbol}" class="text-muted">$</span>
                                 </td>
                                 <td th:text="${asset.description}">Main savings account</td>
                                 <td>
@@ -71,7 +71,7 @@
                                            class="btn btn-primary btn-sm d-flex align-items-center justify-content-center"
                                            style="width: 32px; height: 32px;"
                                            title="Edit">
-                                            <i class="bi bi-pencil-fill"></i>
+                                            <i class="bi bi-pencil"></i>
                                         </a>
                                         <button type="button" 
                                                 class="btn btn-danger btn-sm d-flex align-items-center justify-content-center"
@@ -80,7 +80,7 @@
                                                 data-bs-toggle="modal" 
                                                 data-bs-target="#deleteAssetModal"
                                                 title="Delete">
-                                            <i class="bi bi-x-lg"></i>
+                                            <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
                                 </td>

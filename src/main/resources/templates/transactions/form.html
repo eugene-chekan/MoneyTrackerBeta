@@ -3,7 +3,7 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/main}">
 <head>
-    <title th:text="${transaction.id != null ? 'Edit Transaction' : 'New Transaction'}">Transaction Form</title>
+    <title th:text="${transaction.id == null ? 'New Transaction' : 'Edit Transaction'}">Transaction</title>
 </head>
 <body>
     <div layout:fragment="content">
@@ -11,71 +11,100 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title mb-0" th:text="${transaction.id != null ? 'Edit Transaction' : 'New Transaction'}">Transaction Form</h3>
+                        <h3 class="card-title mb-0" th:text="${transaction.id == null ? 'New Transaction' : 'Edit Transaction'}">Transaction</h3>
                     </div>
                     <div class="card-body">
-                        <form th:action="@{${transaction.id != null ? '/transactions/' + transaction.id + '/edit' : '/transactions'}}"
-                              method="post" 
-                              th:object="${transaction}">
-
-                            <!-- Transaction Type -->
-                            <div class="mb-3">
-                                <label for="type" class="form-label">Type</label>
-                                <select class="form-select" id="type" th:field="*{type.id}" required
-                                        onchange="updateDropdowns()">
-                                    <option value="">Select type</option>
-                                    <option th:each="transactionType : ${transactionTypes}"
-                                            th:value="${transactionType.id}"
-                                            th:text="${transactionType.name}">
-                                    </option>
-                                </select>
+                        <!-- Add hidden fields for edit mode -->
+                        <input type="hidden" th:if="${transaction.id}" name="id" th:value="${transaction.id}">
+                        
+                        <ul class="nav nav-tabs" id="transactionTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="income-tab" data-bs-toggle="tab" data-bs-target="#income" type="button" role="tab">Income</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="expense-tab" data-bs-toggle="tab" data-bs-target="#expense" type="button" role="tab">Expense</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="transfer-tab" data-bs-toggle="tab" data-bs-target="#transfer" type="button" role="tab">Transfer</button>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content" id="transactionTabsContent">
+                            <!-- Income Tab -->
+                            <div class="tab-pane fade" id="income" role="tabpanel" aria-labelledby="income-tab">
+                                <form th:action="@{${transaction.id != null ? '/transactions/' + transaction.id + '/edit' : '/transactions'}}" 
+                                      method="post" class="mt-3">
+                                    <input type="hidden" name="type" value="INCOME">
+                                    <div class="mb-3">
+                                        <label for="incomeSource" class="form-label">Source</label>
+                                        <select class="form-select" id="incomeSource" name="sourceId" required>
+                                            <option value="">Select source</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="incomeDestination" class="form-label">Destination</label>
+                                        <select class="form-select" id="incomeDestination" name="destinationId" required>
+                                            <option value="">Select destination</option>
+                                        </select>
+                                    </div>
+                                    <div th:replace="~{fragments/transaction_fields :: fields}"></div>
+                                    <div class="d-grid gap-2">
+                                        <button type="submit" class="btn btn-primary">Save Income</button>
+                                        <a th:href="@{/transactions}" class="btn btn-secondary">Cancel</a>
+                                    </div>
+                                </form>
                             </div>
 
-                            <!-- Date and Time -->
-                            <div class="mb-3">
-                                <label for="timestamp" class="form-label">Date</label>
-                                <input type="datetime-local" class="form-control" id="timestamp" 
-                                       th:field="*{timestamp}" required>
+                            <!-- Expense Tab -->
+                            <div class="tab-pane fade show active" id="expense" role="tabpanel" aria-labelledby="expense-tab">
+                                <form th:action="@{${transaction.id != null ? '/transactions/' + transaction.id + '/edit' : '/transactions'}}" 
+                                      method="post" class="mt-3">
+                                    <input type="hidden" name="type" value="EXPENSE">
+                                    <div class="mb-3">
+                                        <label for="expenseSource" class="form-label">Source</label>
+                                        <select class="form-select" id="expenseSource" name="sourceId" required>
+                                            <option value="">Select source</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="expenseDestination" class="form-label">Destination</label>
+                                        <select class="form-select" id="expenseDestination" name="destinationId" required>
+                                            <option value="">Select destination</option>
+                                        </select>
+                                    </div>
+                                    <div th:replace="~{fragments/transaction_fields :: fields}"></div>
+                                    <div class="d-grid gap-2">
+                                        <button type="submit" class="btn btn-primary">Save Expense</button>
+                                        <a th:href="@{/transactions}" class="btn btn-secondary">Cancel</a>
+                                    </div>
+                                </form>
                             </div>
 
-                            <!-- From Dropdown -->
-                            <div class="mb-3">
-                                <label for="source" class="form-label">From</label>
-                                <select class="form-select" id="source" th:field="*{source.id}" required>
-                                    <!-- Options will be populated by JavaScript -->
-                                </select>
+                            <!-- Transfer Tab -->
+                            <div class="tab-pane fade" id="transfer" role="tabpanel" aria-labelledby="transfer-tab">
+                                <form th:action="@{${transaction.id != null ? '/transactions/' + transaction.id + '/edit' : '/transactions'}}" 
+                                      method="post" class="mt-3">
+                                    <input type="hidden" name="type" value="TRANSFER">
+                                    <div class="mb-3">
+                                        <label for="transferSource" class="form-label">Source</label>
+                                        <select class="form-select" id="transferSource" name="sourceId" required>
+                                            <option value="">Select source</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="transferDestination" class="form-label">Destination</label>
+                                        <select class="form-select" id="transferDestination" name="destinationId" required>
+                                            <option value="">Select destination</option>
+                                        </select>
+                                    </div>
+                                    <div th:replace="~{fragments/transaction_fields :: fields}"></div>
+                                    <div class="d-grid gap-2">
+                                        <button type="submit" class="btn btn-primary">Save Transfer</button>
+                                        <a th:href="@{/transactions}" class="btn btn-secondary">Cancel</a>
+                                    </div>
+                                </form>
                             </div>
-
-                            <!-- To Dropdown -->
-                            <div class="mb-3">
-                                <label for="destination" class="form-label">To</label>
-                                <select class="form-select" id="destination" th:field="*{destination.id}" required>
-                                    <!-- Options will be populated by JavaScript -->
-                                </select>
-                            </div>
-
-                            <!-- Amount -->
-                            <div class="mb-3">
-                                <label for="amount" class="form-label">Amount</label>
-                                <input type="number" class="form-control" id="amount" 
-                                       th:field="*{amount}" step="0.01" required>
-                            </div>
-
-                            <!-- Description/Comment -->
-                            <div class="mb-3">
-                                <label for="comment" class="form-label">Description</label>
-                                <textarea class="form-control" id="comment" 
-                                         th:field="*{comment}" rows="3"></textarea>
-                            </div>
-
-                            <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary" 
-                                        th:text="${transaction.id != null ? 'Update Transaction' : 'Create Transaction'}">
-                                    Submit
-                                </button>
-                                <a th:href="@{/transactions}" class="btn btn-outline-secondary">Cancel</a>
-                            </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -84,56 +113,127 @@
 
     <th:block layout:fragment="scripts">
         <script th:inline="javascript">
-            // Get data from Thymeleaf
-            const incomeCategories = /*[[${incomeCategories}]]*/ [];
-            const expenseCategories = /*[[${expenseCategories}]]*/ [];
-            const assets = /*[[${assets}]]*/ [];
-
-            // Set default date to now
             document.addEventListener('DOMContentLoaded', function() {
-                const now = new Date();
-                now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
-                document.getElementById('timestamp').value = now.toISOString().slice(0, 16);
-                updateDropdowns();
-            });
-
-            function updateDropdowns() {
-                const typeSelect = document.getElementById('type');
-                const selectedType = typeSelect.options[typeSelect.selectedIndex].text.toUpperCase();
-                const sourceSelect = document.getElementById('source');
-                const destinationSelect = document.getElementById('destination');
-
-                // Clear existing options
-                sourceSelect.innerHTML = '';
-                destinationSelect.innerHTML = '';
-
-                if (selectedType === 'INCOME') {
-                    // From: Income Categories, To: Assets
-                    populateSelect(sourceSelect, incomeCategories);
-                    populateSelect(destinationSelect, assets);
-                } else if (selectedType === 'EXPENSE') {
-                    // From: Assets, To: Expense Categories
-                    populateSelect(sourceSelect, assets);
-                    populateSelect(destinationSelect, expenseCategories);
-                } else if (selectedType === 'TRANSFER') {
-                    // Both: Assets
-                    populateSelect(sourceSelect, assets);
-                    populateSelect(destinationSelect, assets);
+                const transaction = /*[[${transaction}]]*/ null;
+                const linkedTransaction = /*[[${linkedTransaction}]]*/ null;
+                const incomeCategories = /*[[${incomeCategories}]]*/ [];
+                const expenseCategories = /*[[${expenseCategories}]]*/ [];
+                const assets = /*[[${assets}]]*/ [];
+                
+                console.log('Main Transaction:', transaction);
+                console.log('Linked Transaction:', linkedTransaction);
+                console.log('Assets:', assets);
+                
+                // Populate dropdowns
+                function populateSelect(selectId, items) {
+                    const select = document.getElementById(selectId);
+                    select.innerHTML = '<option value="">Select option</option>';
+                    items.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.id;
+                        option.textContent = item.name;
+                        select.appendChild(option);
+                    });
                 }
-            }
 
-            function populateSelect(select, items) {
-                select.innerHTML = '<option value="">Select...</option>';
-                items.forEach(item => {
-                    const option = document.createElement('option');
-                    option.value = item.id;
-                    option.text = item.name;
-                    if (item.emojiIcon) {
-                        option.text = item.emojiIcon + ' ' + item.name;
+                // Populate asset dropdowns
+                populateSelect('incomeDestination', assets);
+                populateSelect('expenseSource', assets);
+                populateSelect('transferSource', assets);
+                populateSelect('transferDestination', assets);
+
+                // Populate category dropdowns
+                populateSelect('incomeSource', incomeCategories);
+                populateSelect('expenseDestination', expenseCategories);
+                
+                // Set default timestamp for new transactions
+                if (!transaction || !transaction.id) {
+                    const now = new Date();
+                    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+                    const defaultTimestamp = now.toISOString().slice(0, 16);
+                    document.querySelectorAll('input[name="timestamp"]').forEach(input => {
+                        input.value = defaultTimestamp;
+                    });
+                }
+                
+                // If editing, select the correct tab and populate fields
+                if (transaction && transaction.id) {
+                    const isTransfer = transaction.transferTransactionId != null;
+                    const isExpense = transaction.amount < 0;
+                    
+                    console.log('Is Transfer:', isTransfer);
+                    console.log('Is Expense:', isExpense);
+                    
+                    // Format timestamp
+                    const timestamp = new Date(transaction.timestamp);
+                    timestamp.setMinutes(timestamp.getMinutes() - timestamp.getTimezoneOffset());
+                    const formattedTimestamp = timestamp.toISOString().slice(0, 16);
+                    
+                    if (isTransfer) {
+                        // For transfers, always show the transfer tab
+                        const tabElement = document.querySelector('#transfer-tab');
+                        if (tabElement) {
+                            const tab = new bootstrap.Tab(tabElement);
+                            tab.show();
+                        }
+                        
+                        // Get the transfer form
+                        const transferForm = document.querySelector('#transfer');
+                        
+                        // Set the amount (always positive)
+                        transferForm.querySelector('input[name="amount"]').value = Math.abs(transaction.amount);
+                        transferForm.querySelector('input[name="timestamp"]').value = formattedTimestamp;
+                        transferForm.querySelector('textarea[name="comment"]').value = transaction.comment || '';
+                        
+                        // For transfers, combine source/destination from both transactions
+                        const sourceId = linkedTransaction.sourceId || transaction.sourceId;
+                        const destinationId = transaction.destinationId || linkedTransaction.destinationId;
+                        
+                        console.log('Combined Source ID:', sourceId);
+                        console.log('Combined Destination ID:', destinationId);
+                        
+                        transferForm.querySelector('#transferSource').value = sourceId;
+                        transferForm.querySelector('#transferDestination').value = destinationId;
+                        
+                        // Add hidden id field
+                        const idInput = document.createElement('input');
+                        idInput.type = 'hidden';
+                        idInput.name = 'id';
+                        idInput.value = transaction.id;
+                        transferForm.querySelector('form').appendChild(idInput);
+                    } else {
+                        // Regular transaction handling
+                        const tabId = isExpense ? 'expense' : 'income';
+                        const tabElement = document.querySelector(`#${tabId}-tab`);
+                        if (tabElement) {
+                            const tab = new bootstrap.Tab(tabElement);
+                            tab.show();
+                        }
+                        
+                        const activeForm = document.querySelector(`#${tabId}`);
+                        activeForm.querySelector('input[name="amount"]').value = Math.abs(transaction.amount);
+                        activeForm.querySelector('input[name="timestamp"]').value = formattedTimestamp;
+                        activeForm.querySelector('textarea[name="comment"]').value = transaction.comment || '';
+                        
+                        if (isExpense) {
+                            activeForm.querySelector('#expenseSource').value = transaction.sourceId;
+                            activeForm.querySelector('#expenseDestination').value = transaction.destinationId;
+                        } else {
+                            activeForm.querySelector('#incomeSource').value = transaction.sourceId;
+                            activeForm.querySelector('#incomeDestination').value = transaction.destinationId;
+                        }
+                        
+                        // Add hidden id field
+                        if (transaction.id) {
+                            const idInput = document.createElement('input');
+                            idInput.type = 'hidden';
+                            idInput.name = 'id';
+                            idInput.value = transaction.id;
+                            activeForm.querySelector('form').appendChild(idInput);
+                        }
                     }
-                    select.appendChild(option);
-                });
-            }
+                }
+            });
         </script>
     </th:block>
 </body>

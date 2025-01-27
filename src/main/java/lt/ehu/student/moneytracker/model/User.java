@@ -33,7 +33,7 @@ public class User {
     @Column(name = "last_name", length = 100)
     private String lastName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "default_currency", nullable = false)
     private Currency defaultCurrency;
 

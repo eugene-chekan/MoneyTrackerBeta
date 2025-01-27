@@ -15,4 +15,5 @@ public interface AssetService {
     void delete(UUID id);
     Long count();
     void validateUserAccess(UUID assetId, Integer userId);
+    boolean existsById(UUID id);
 } 

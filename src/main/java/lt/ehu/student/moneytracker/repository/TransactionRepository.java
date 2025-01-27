@@ -1,9 +1,8 @@
 package lt.ehu.student.moneytracker.repository;
 
-import lt.ehu.student.moneytracker.model.Asset;
 import lt.ehu.student.moneytracker.model.Transaction;
-import lt.ehu.student.moneytracker.model.TransactionType;
 import lt.ehu.student.moneytracker.model.User;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -21,10 +20,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID> 
             LocalDateTime startDate, 
             LocalDateTime endDate
     );
-    List<Transaction> findBySourceOrDestination(Asset source, Asset destination);
-    List<Transaction> findByUserAndType(User user, TransactionType type);
-    Optional<Transaction> findByIdAndUser(UUID id, User user);
-    boolean existsByIdAndUser(UUID id, User user);
     
     // For reporting
     @Query("SELECT t.currency, SUM(t.amount) FROM Transaction t " +

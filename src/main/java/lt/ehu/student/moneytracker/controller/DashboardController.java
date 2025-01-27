@@ -1,5 +1,6 @@
 package lt.ehu.student.moneytracker.controller;
 
+import lt.ehu.student.moneytracker.dto.TransactionDTO;
 import lt.ehu.student.moneytracker.model.Asset;
 import lt.ehu.student.moneytracker.model.Transaction;
 import lt.ehu.student.moneytracker.model.User;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Controller
 @Secured({"USER", "ADMIN"})
@@ -28,7 +31,6 @@ public class DashboardController {
     @Autowired
     public DashboardController(AssetService assetService, 
                              TransactionService transactionService,
-                             UserService userService,
                              CategoryService categoryService) {
         this.assetService = assetService;
         this.transactionService = transactionService;
@@ -38,19 +40,41 @@ public class DashboardController {
     @GetMapping({"/", "/dashboard"})
     public String dashboard(@ModelAttribute("currentUser") User user, Model model) {
         List<Asset> assets = assetService.findByUserId(user.getId());
-        List<Transaction> recentTransactions = transactionService
+        List<Transaction> transactions = transactionService
             .findByUserIdAndDateRange(
                 user.getId(),
                 LocalDateTime.now().minusDays(30),
                 LocalDateTime.now()
             );
+        
+        // Prepare transaction data with resolved sources and destinations
+        var transactionDTOs = transactions.stream()
+            .map(transaction -> new TransactionDTO(
+                transaction,
+                resolveEntityName(transaction.getSourceId()),
+                resolveEntityName(transaction.getDestinationId())
+            ))
+            .collect(Collectors.toList());
+
         List<Category> categories = categoryService.findByUserId(user.getId());
 
         model.addAttribute("assets", assets);
-        model.addAttribute("recentTransactions", recentTransactions);
+        model.addAttribute("recentTransactions", transactionDTOs);
         model.addAttribute("categories", categories);
         model.addAttribute("user", user);
         
         return "dashboard";
+    }
+
+    private String resolveEntityName(UUID id) {
+        if (id == null) return "-";
+        
+        if (assetService.existsById(id)) {
+            return assetService.getById(id).getName();
+        }
+        if (categoryService.existsById(id)) {
+            return categoryService.getById(id).getName();
+        }
+        return "-";
     }
 } 

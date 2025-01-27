@@ -27,33 +27,26 @@ public class Transaction {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "type", nullable = false)
-    private TransactionType type;
-
     @CreationTimestamp
-    @Column(name = "timestamp", nullable = false, updatable = false)
+    @Column(name = "timestamp", nullable = false)
     private LocalDateTime timestamp;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "source", nullable = false)
-    private Asset source;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "destination", nullable = false)
-    private Asset destination;
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal amount;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "currency_id", nullable = false)
     private Currency currency;
 
     @Column(columnDefinition = "text")
     private String comment;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @Column(name = "source_id")
+    private UUID sourceId;
+
+    @Column(name = "destination_id")
+    private UUID destinationId;
+
+    @Column(name = "transfer_transaction_id")
+    private UUID transferTransactionId;
 }

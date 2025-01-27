@@ -19,22 +19,22 @@ public class Asset {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
+    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "type_id", nullable = false)
-    private AssetType type;
-
     @Column(length = 50, nullable = false)
     private String name;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "type_id", nullable = false)
+    private AssetType type;
     
     @Column(precision = 10, scale = 2, nullable = false)
     private BigDecimal balance;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "currency_id", nullable = false)
     private Currency currency;
 

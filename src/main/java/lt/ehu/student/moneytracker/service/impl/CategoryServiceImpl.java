@@ -13,6 +13,7 @@ import lt.ehu.student.moneytracker.service.UserService;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Transactional
@@ -32,12 +33,12 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Optional<Category> findById(Long id) {
+    public Optional<Category> findById(UUID id) {
         return categoryRepository.findById(id);
     }
 
     @Override
-    public Category getById(Long id) {
+    public Category getById(UUID id) {
         return findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
     }
@@ -66,7 +67,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(UUID id) {
         if (!categoryRepository.existsById(id)) {
             throw new ResourceNotFoundException("Category not found");
         }
@@ -81,7 +82,12 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Optional<Category> findByIdAndUserId(Long id, Integer userId) {
+    public Optional<Category> findByIdAndUserId(UUID id, Integer userId) {
         return categoryRepository.findByIdAndUserId(id, userId);
+    }
+
+    @Override
+    public boolean existsById(UUID id) {
+        return categoryRepository.existsById(id);
     }
 }

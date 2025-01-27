@@ -116,4 +116,9 @@ public class AssetServiceImpl implements AssetService {
         }
         validateNewAsset(asset);
     }
+
+    @Override
+    public boolean existsById(UUID id) {
+        return assetRepository.existsById(id);
+    }
 }

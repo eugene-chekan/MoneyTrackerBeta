@@ -5,6 +5,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -72,7 +75,7 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}/edit")
-    public String editCategoryForm(@PathVariable Long id, 
+    public String editCategoryForm(@PathVariable UUID id, 
                                  @AuthenticationPrincipal UserDetails userDetails,
                                  Model model) {
         var user = userService.findByLogin(userDetails.getUsername())
@@ -87,7 +90,7 @@ public class CategoryController {
     }
 
     @PostMapping("/{id}/delete")
-    public String deleteCategory(@PathVariable Long id,
+    public String deleteCategory(@PathVariable UUID id,
                             @AuthenticationPrincipal UserDetails userDetails) {
         var user = userService.findByLogin(userDetails.getUsername())
             .orElseThrow(() -> new IllegalStateException("User not found"));
@@ -101,7 +104,7 @@ public class CategoryController {
     }
 
     @PostMapping("/{id}/edit")
-    public String updateCategory(@PathVariable Long id,
+    public String updateCategory(@PathVariable UUID id,
                                @ModelAttribute Category category,
                                @AuthenticationPrincipal UserDetails userDetails,
                                RedirectAttributes redirectAttributes) {

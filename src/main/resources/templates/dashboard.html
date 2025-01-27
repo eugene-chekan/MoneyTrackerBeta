@@ -42,7 +42,7 @@
                                         <td th:text="${asset.type.name}">Cash</td>
                                         <td class="text-end">
                                             <span th:text="${#numbers.formatDecimal(asset.balance, 1, 2)}">1000.00</span>
-                                            <span th:text="${asset.currency.code}">USD</span>
+                                            <span th:text="${asset.currency.symbol}">$</span>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -114,14 +114,20 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr th:each="transaction : ${recentTransactions}">
-                                        <td th:text="${#temporals.format(transaction.timestamp, 'dd-MM-yyyy HH:mm')}">01-01-2024</td>
-                                        <td th:text="${transaction.type}">Transfer</td>
-                                        <td th:text="${transaction.source?.name ?: '-'}">Account 1</td>
-                                        <td th:text="${transaction.destination?.name ?: '-'}">Account 2</td>
+                                    <tr th:each="txn : ${recentTransactions}">
+                                        <td th:text="${#temporals.format(txn.timestamp, 'dd-MM-yyyy HH:mm')}">01-01-2024</td>
+                                        <td>
+                                            <!-- Source name with transaction type indicator -->
+                                            <span th:if="${txn.isTransfer()}" class="badge bg-info me-1">Transfer</span>
+                                            <span th:if="${!txn.isTransfer() && txn.isExpense()}" class="badge bg-danger me-1">Expense</span>
+                                            <span th:if="${!txn.isTransfer() && txn.isIncome()}" class="badge bg-success me-1">Income</span>
+                                        </td>
+                                        <td th:text="${txn.sourceName}">Source</td>
+                                        <td th:text="${txn.destinationName}">Destination</td>
                                         <td class="text-end">
-                                            <span th:text="${#numbers.formatDecimal(transaction.amount, 1, 2)}">100.00</span>
-                                            <span th:text="${transaction.currency.code}">USD</span>
+                                            <span th:class="${txn.amount < 0 ? 'text-danger' : 'text-success'}"
+                                                  th:text="${#numbers.formatDecimal(txn.amount, 1, 2)}">100.00</span>
+                                            <span th:text="${txn.currency.symbol}" class="text-muted">$</span>
                                         </td>
                                     </tr>
                                 </tbody>
