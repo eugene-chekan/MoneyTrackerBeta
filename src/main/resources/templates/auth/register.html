@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title>Register</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <div class="text-center mb-2">
+                            <img th:src="@{/img/logo-white-520x520.png}" alt="MoneyTracker" width="240" height="240">
+                        </div>
+                        <h3 class="card-title text-center mb-4">Create Account</h3>
+                        
+                        <div th:if="${param.error}" class="alert alert-danger">
+                            <span th:text="${param.error}"></span>
+                        </div>
+                        
+                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <span th:text="${error}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        
+                        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                            <span th:text="${success}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        
+                        <form th:action="@{/auth/register}" method="post" th:object="${user}">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="firstName" class="form-label">First Name</label>
+                                    <input type="text" class="form-control" id="firstName" th:field="*{firstName}">
+                                </div>
+                                
+                                <div class="col-md-6 mb-3">
+                                    <label for="lastName" class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" id="lastName" th:field="*{lastName}">
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="login" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="login" th:field="*{login}" required>
+                                <div class="form-text">Username must be unique</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" th:field="*{email}" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="passwordHash" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="passwordHash" th:field="*{passwordHash}" required>
+                                <div class="form-text">At least 8 characters</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="defaultCurrency" class="form-label">Default Currency</label>
+                                <select class="form-select" id="defaultCurrency" th:field="*{defaultCurrency}" required>
+                                    <option value="">Select currency</option>
+                                    <option th:each="currency : ${currencies}"
+                                            th:value="${currency.id}"
+                                            th:text="${currency.code + ' - ' + currency.name}">USD - US Dollar</option>
+                                </select>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">Register</button>
+                            </div>
+                        </form>
+                        
+                        <div class="text-center mt-3">
+                            <a th:href="@{/auth/login}" class="text-decoration-none">
+                                Already have an account? Login
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

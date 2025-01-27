@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
+<head>
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h2 class="mb-4">Admin Dashboard</h2>
+        
+        <div class="row">
+            <!-- User Management Card -->
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">User Management</h5>
+                        <p class="card-text">Manage users and their roles</p>
+                        <a th:href="@{/admin/users}" class="btn btn-primary">Manage Users</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Currency Management Card -->
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Currency Management</h5>
+                        <p class="card-text">Manage available currencies</p>
+                        <a th:href="@{/admin/currencies}" class="btn btn-primary">Manage Currencies</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Stats -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">System Statistics</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <div class="border rounded p-3 text-center">
+                                    <h6>Total Users</h6>
+                                    <h3 th:text="${userCount ?: 0}">0</h3>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="border rounded p-3 text-center">
+                                    <h6>Total Assets</h6>
+                                    <h3 th:text="${assetCount ?: 0}">0</h3>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="border rounded p-3 text-center">
+                                    <h6>Total Transactions</h6>
+                                    <h3 th:text="${transactionCount ?: 0}">0</h3>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="border rounded p-3 text-center">
+                                    <h6>Active Currencies</h6>
+                                    <h3 th:text="${currencyCount ?: 0}">0</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
