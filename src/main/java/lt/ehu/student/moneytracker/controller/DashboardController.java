@@ -7,7 +7,6 @@ import lt.ehu.student.moneytracker.model.User;
 import lt.ehu.student.moneytracker.model.Category;
 import lt.ehu.student.moneytracker.service.AssetService;
 import lt.ehu.student.moneytracker.service.TransactionService;
-import lt.ehu.student.moneytracker.service.UserService;
 import lt.ehu.student.moneytracker.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

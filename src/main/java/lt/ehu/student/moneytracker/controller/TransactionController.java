@@ -16,7 +16,6 @@ import java.math.BigDecimal;
 import java.util.UUID;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.hibernate.Hibernate;
 
 @Controller
 @RequestMapping("/transactions")
